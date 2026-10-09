@@ -102,7 +102,7 @@ copied next to it (`--artifacts png --artifactsinsubfolders`). In CI they are in
 `results-<browser>` artifact of each run.
 
 **report.html**: totals, then statistics by tag and by suite. This is a full pabot run:
-30 tests, about 3 minutes of test time in 1 min 23 s of wall time.
+30 tests, about 2.5 minutes of test time finished in about 1 minute of wall time.
 
 ![Robot Framework report: 30 of 30 tests passed, statistics by tag and by suite](docs/images/report-overview.png)
 
