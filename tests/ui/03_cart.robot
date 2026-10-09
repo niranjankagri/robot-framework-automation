@@ -2,6 +2,7 @@
 Documentation     Cart: adding and removing products, badge count, cart contents.
 Resource          ../../resources/pages/LoginPage.resource
 Resource          ../../resources/pages/InventoryPage.resource
+Resource          ../../resources/components/HeaderComponent.resource
 Resource          ../../resources/pages/CartPage.resource
 Test Setup        Open Shop And Log In
 Test Teardown     Close Shop

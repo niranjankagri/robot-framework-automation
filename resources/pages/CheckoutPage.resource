@@ -1,11 +1,15 @@
 *** Settings ***
 Documentation     Page objects for the three checkout steps:
 ...               1. your information, 2. overview (prices), 3. complete.
+...               The three steps are one flow with shared buttons (Continue, Cancel),
+...               so they share one resource file instead of three tiny ones.
 Resource          ../common.resource
 Library           ../../libraries/ShopLibrary.py
 
 
 *** Variables ***
+${INFORMATION_PATH}    /checkout-step-one.html
+${COMPLETE_PATH}       /checkout-complete.html
 # Robot variable names ignore case and underscores, so ${FIRST_NAME} would clash
 # with the keyword argument ${first_name}. Hence the _INPUT suffix on the locators.
 ${FIRST_NAME_INPUT}    css:[data-test="firstName"]
@@ -24,6 +28,11 @@ ${BACK_HOME_BUTTON}    css:[data-test="back-to-products"]
 
 
 *** Keywords ***
+Open Checkout Information Page
+    [Documentation]    Opens step 1 directly by URL (the cart may be empty; the form still works).
+    ...                Lets the form-validation tests skip the cart steps.
+    Go To    ${UI_URL}${INFORMATION_PATH}
+
 Enter Customer Information
     [Documentation]    Step 1. Empty arguments are allowed so negative tests can leave fields blank.
     [Arguments]    ${first_name}    ${last_name}    ${postal_code}
@@ -63,7 +72,7 @@ Order Should Be Complete
     [Documentation]    Step 3.
     Wait Until Element Is Visible    ${COMPLETE_HEADER}
     Element Text Should Be    ${COMPLETE_HEADER}    Thank you for your order!
-    Location Should Contain    /checkout-complete.html
+    Location Should Contain    ${COMPLETE_PATH}
 
 Back To Products
     [Documentation]    Goes back to the product list after the order.

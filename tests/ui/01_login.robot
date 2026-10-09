@@ -2,6 +2,7 @@
 Documentation     Login and logout on Sauce Demo, including the error messages.
 Resource          ../../resources/pages/LoginPage.resource
 Resource          ../../resources/pages/InventoryPage.resource
+Resource          ../../resources/components/HeaderComponent.resource
 # A fresh browser per test keeps tests independent (no shared session or cookies).
 Test Setup        Open Shop
 Test Teardown     Close Shop
@@ -23,7 +24,7 @@ User Can Log Out
 
 Logged Out User Cannot Open Products Page Directly
     [Documentation]    Access control: the products URL must send an anonymous user back to login.
-    Go To    ${UI_URL}/inventory.html
+    Open Products Page Directly
     Login Error Should Be    Epic sadface: You can only access '/inventory.html' when you are logged in.
 
 Invalid Logins Show The Right Error
@@ -42,6 +43,6 @@ Invalid Logins Show The Right Error
 Login Should Fail With
     [Documentation]    Template keyword: reloads the login page, tries the login, checks the error.
     [Arguments]    ${username}    ${password}    ${expected_error}
-    Go To    ${UI_URL}
+    Open Login Page
     Login As    ${username}    ${password}
     Login Error Should Be    ${expected_error}

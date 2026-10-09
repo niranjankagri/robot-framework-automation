@@ -2,6 +2,7 @@
 Documentation     Checkout: the full order flow (end to end), price maths and form validation.
 Resource          ../../resources/pages/LoginPage.resource
 Resource          ../../resources/pages/InventoryPage.resource
+Resource          ../../resources/components/HeaderComponent.resource
 Resource          ../../resources/pages/CartPage.resource
 Resource          ../../resources/pages/CheckoutPage.resource
 Test Setup        Open Shop And Log In
@@ -59,6 +60,6 @@ Customer Information Is Required
 Checkout Should Fail With
     [Documentation]    Template: submits step 1 with a missing field and checks the error.
     [Arguments]    ${first_name}    ${last_name}    ${postal_code}    ${expected_error}
-    Go To    ${UI_URL}/checkout-step-one.html
+    Open Checkout Information Page
     Enter Customer Information    ${first_name}    ${last_name}    ${postal_code}
     Checkout Error Should Be    ${expected_error}

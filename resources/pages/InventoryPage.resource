@@ -1,41 +1,31 @@
 *** Settings ***
-Documentation     Page object for the product list (inventory) and the header shared by
-...               all logged-in pages (cart icon, burger menu).
+Documentation     Page object for the product list (inventory page, /inventory.html).
+...               The header (menu, cart icon) is a separate component, imported here so
+...               a test that uses this page can also use the header keywords.
 Resource          ../common.resource
+Resource          ../components/HeaderComponent.resource
 Library           ../../libraries/ShopLibrary.py
 
 
 *** Variables ***
+${INVENTORY_PATH}     /inventory.html
 ${PAGE_TITLE}         css:[data-test="title"]
-${MENU_BUTTON}        id:react-burger-menu-btn
-${LOGOUT_LINK}        id:logout_sidebar_link
-${RESET_LINK}         id:reset_sidebar_link
-${MENU_CLOSE}         id:react-burger-cross-btn
 ${SORT_SELECT}        css:[data-test="product-sort-container"]
 ${ITEM_NAMES}         css:[data-test="inventory-item-name"]
 ${ITEM_PRICES}        css:[data-test="inventory-item-price"]
-${CART_BADGE}         css:[data-test="shopping-cart-badge"]
-${CART_LINK}          css:[data-test="shopping-cart-link"]
 
 
 *** Keywords ***
+Open Products Page Directly
+    [Documentation]    Types the products URL into the browser, skipping the login form.
+    ...                Used to check that the page is protected.
+    Go To    ${UI_URL}${INVENTORY_PATH}
+
 Products Page Should Be Open
     [Documentation]    Checks the title and URL of the product list.
     Wait Until Element Is Visible    ${PAGE_TITLE}
     Element Text Should Be    ${PAGE_TITLE}    Products
-    Location Should Contain    /inventory.html
-
-Logout
-    [Documentation]    Logs out through the burger menu.
-    Open Menu And Click    ${LOGOUT_LINK}
-
-Open Menu And Click
-    [Documentation]    Opens the burger menu and clicks one of its links.
-    [Arguments]    ${link}
-    Click Button    ${MENU_BUTTON}
-    # The menu slides in; wait until the link is really visible before clicking.
-    Wait Until Element Is Visible    ${link}
-    Click Link    ${link}
+    Location Should Contain    ${INVENTORY_PATH}
 
 Sort Products By
     [Documentation]    ${label} is the visible option text, e.g. "Price (low to high)".
@@ -67,16 +57,3 @@ Remove Product From Cart
     ${id}=    Product Id    ${name}
     Click Button    css:[data-test="remove-${id}"]
     Wait Until Element Is Visible    css:[data-test="add-to-cart-${id}"]
-
-Cart Badge Should Show
-    [Documentation]    0 means the badge is not shown at all (Sauce Demo hides it when empty).
-    [Arguments]    ${count}
-    IF    ${count} == 0
-        Page Should Not Contain Element    ${CART_BADGE}
-    ELSE
-        Element Text Should Be    ${CART_BADGE}    ${count}
-    END
-
-Open Cart
-    [Documentation]    Opens the cart through the cart icon in the header.
-    Click Link    ${CART_LINK}

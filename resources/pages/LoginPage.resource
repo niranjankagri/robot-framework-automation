@@ -15,6 +15,11 @@ ${LOGIN_ERROR}        css:[data-test="error"]
 
 
 *** Keywords ***
+Open Login Page
+    [Documentation]    Loads the login page again in the current browser
+    ...                (data-driven tests run several logins in one browser).
+    Go To    ${UI_URL}
+
 Login Page Should Be Open
     [Documentation]    Checks that the login form is shown.
     Wait Until Element Is Visible    ${LOGIN_BUTTON}

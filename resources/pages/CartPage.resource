@@ -1,9 +1,11 @@
 *** Settings ***
-Documentation     Page object for the cart page.
+Documentation     Page object for the cart page (/cart.html): what is in the cart, and the
+...               buttons to go back shopping or on to the checkout.
 Resource          ../common.resource
 
 
 *** Variables ***
+${CART_PATH}             /cart.html
 ${CART_ITEM_NAMES}       css:[data-test="inventory-item-name"]
 ${CART_ITEMS}            css:[data-test="inventory-item"]
 ${CHECKOUT_BUTTON}       css:[data-test="checkout"]
@@ -14,7 +16,7 @@ ${CONTINUE_SHOPPING}     css:[data-test="continue-shopping"]
 Cart Page Should Be Open
     [Documentation]    Checks that the cart page is shown.
     Wait Until Element Is Visible    ${CHECKOUT_BUTTON}
-    Location Should Contain    /cart.html
+    Location Should Contain    ${CART_PATH}
 
 Cart Should Contain Exactly
     [Documentation]    Compares the product names in the cart with ${expected}, ignoring order.
