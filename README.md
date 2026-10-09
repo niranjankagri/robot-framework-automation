@@ -236,8 +236,9 @@ Select with `--include` / `--exclude`, e.g. `--include smoke`, `--include uiANDn
 
 1. Find the page object (or service object) for the screen/endpoint. If a keyword is missing, add it
    there with a `[Documentation]`, using the locators in that file's `*** Variables ***`.
-2. Write the test in the matching `tests/` suite using only those keywords. Tag it with its area,
-   plus `smoke` / `negative` / `e2e` where it fits.
+2. Write the test in the matching `tests/` suite using only those keywords. Give it a one-line
+   `[Documentation]` saying what it proves, and tag it with its area plus `smoke` / `negative` / `e2e`
+   where it fits.
 3. Keep the test independent: UI tests get a fresh browser from `Test Setup`; never rely on what
    another test left behind (pabot may run them in any order and at the same time).
 4. Run `robocop check`, then the suite.
@@ -248,6 +249,10 @@ Select with `--include` / `--exclude`, e.g. `--include smoke`, `--include uiANDn
 robocop check          # lint every .robot / .resource file (settings in pyproject.toml)
 robot --dryrun tests   # check syntax and that every keyword exists, without running anything
 ```
+
+Robocop's documentation rules are on, so every suite, test and keyword must have a
+`[Documentation]` (it is what `log.html` and Libdoc show). Comments (`#`) explain *why*
+something is done where the code alone does not say it.
 
 ## Continuous integration
 
