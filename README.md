@@ -18,6 +18,7 @@ built on the Page Object Model and run in parallel with **pabot**.
 
 - [Setup](#setup)
 - [Running the tests](#running-the-tests)
+- [Reports](#reports)
 - [Project structure](#project-structure)
 - [Design: Page Object Model](#design-page-object-model)
 - [Configuration](#configuration)
@@ -93,6 +94,30 @@ They combine: later files add to or override earlier ones.
 | [`args/ci.args`](args/ci.args) | headless browser, `xunit.xml`, log level INFO |
 | [`args/smoke.args`](args/smoke.args) | only tests tagged `smoke` |
 
+## Reports
+
+Every run writes `report.html` (overview) and `log.html` (every keyword step) to `results/`.
+With pabot, the per-process outputs are merged into one report, and failure screenshots are
+copied next to it (`--artifacts png --artifactsinsubfolders`). In CI they are in the
+`results-<browser>` artifact of each run.
+
+**report.html**: totals, then statistics by tag and by suite. This is a full pabot run:
+30 tests, about 3 minutes of test time in 1 min 23 s of wall time.
+
+![Robot Framework report: 30 of 30 tests passed, statistics by tag and by suite](docs/images/report-overview.png)
+
+**log.html**: the end-to-end test expanded. Each step is a page-object keyword
+(`InventoryPage.Add Product To Cart`, `HeaderComponent.Open Cart`, `CartPage.Go To Checkout`, ...),
+so the log reads like the user journey.
+
+![Robot Framework log: the end-to-end test expanded into page-object keywords](docs/images/log-e2e-test.png)
+
+**A failure**: SeleniumLibrary takes a screenshot when a keyword fails (`run_on_failure` in
+`common.resource`) and embeds it in the log at the failing step. This run was forced to fail by
+logging in as the locked-out user (`--variable STANDARD_USER:locked_out_user`).
+
+![Robot Framework log: a failed setup with the screenshot taken at the failing step](docs/images/log-failure-screenshot.png)
+
 ## Project structure
 
 ```
@@ -100,6 +125,7 @@ args/                         run profiles (robot/pabot argument files)
 .github/workflows/ci.yml      GitHub Actions: lint, then parallel headless run
 ci/summary.py                 writes the pass/fail table shown on each CI run page
 docs/framework-design.md      why the framework is built this way
+docs/images/                  report and log screenshots used in this README
 libraries/ShopLibrary.py      custom Python keywords (price parsing, sort check, tax maths, test data)
 resources/
   common.resource             browser open/close and options, shared UI helpers
