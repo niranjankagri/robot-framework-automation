@@ -3,6 +3,7 @@ Documentation     Page object for the Sauce Demo login page.
 ...               Tests talk to the page only through these keywords; the locators stay here,
 ...               so a UI change means one edit in this file, not in every test.
 Resource          ../common.resource
+Resource          InventoryPage.resource
 
 
 *** Variables ***
@@ -32,3 +33,10 @@ Login Error Should Be
     [Arguments]    ${expected}
     Wait Until Element Is Visible    ${LOGIN_ERROR}
     Element Text Should Be    ${LOGIN_ERROR}    ${expected}
+
+Open Shop And Log In
+    [Documentation]    Suite/test setup for every test that starts on the products page.
+    [Arguments]    ${username}=${STANDARD_USER}
+    Open Shop
+    Login As    ${username}    ${PASSWORD}
+    Products Page Should Be Open

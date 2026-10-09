@@ -4,6 +4,7 @@ Documentation     Shared UI keywords: opening and closing the browser.
 # Variables first: the Library line below already uses ${TIMEOUT} from it.
 Variables         ../variables/config.py
 Library           SeleniumLibrary    timeout=${TIMEOUT}    run_on_failure=Capture Page Screenshot
+Library           Collections
 
 
 *** Keywords ***
