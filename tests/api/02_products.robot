@@ -2,7 +2,7 @@
 Documentation     DummyJSON products: read, search, paging and the write endpoints.
 ...               DummyJSON only simulates writes (nothing is stored), so the tests check
 ...               the response the API sends back, which is what a client would rely on.
-Resource          ../../resources/api/DummyJsonApi.resource
+Resource          ../../resources/api/ProductsApi.resource
 Suite Setup       Create API Session
 Suite Teardown    Close API Sessions
 Test Tags         api    products
@@ -48,20 +48,19 @@ Select Returns Only Requested Fields
     END
 
 Add Product Echoes The New Product
-    VAR    &{body}    title=Robot Test Product    price=${19.99}    category=testing
-    ${response}=    POST On Session    ${SESSION}    /products/add    json=${body}    expected_status=201
-    Should Be Equal    ${response.json()}[title]    Robot Test Product
-    Should Be Equal As Numbers    ${response.json()}[price]    19.99
-    Dictionary Should Contain Key    ${response.json()}    id
+    ${product}=    Add Product    title=Robot Test Product    price=${19.99}    category=testing
+    Should Be Equal    ${product}[title]    Robot Test Product
+    Should Be Equal As Numbers    ${product}[price]    19.99
+    Dictionary Should Contain Key    ${product}    id
 
 Update Product Changes Only The Sent Field
     ${before}=    Get Product    1
-    VAR    &{body}    price=${12.5}
-    ${response}=    PUT On Session    ${SESSION}    /products/1    json=${body}
-    Should Be Equal As Numbers    ${response.json()}[price]    12.5
-    Should Be Equal    ${response.json()}[title]    ${before.json()}[title]
+    ${after}=    Update Product    1    price=${12.5}
+    Should Be Equal As Numbers    ${after}[price]    12.5
+    # Fields that were not sent must stay as they were.
+    Should Be Equal    ${after}[title]    ${before.json()}[title]
 
 Delete Product Marks It As Deleted
-    ${response}=    DELETE On Session    ${SESSION}    /products/1
-    Should Be True    ${response.json()}[isDeleted]
-    Dictionary Should Contain Key    ${response.json()}    deletedOn
+    ${product}=    Delete Product    1
+    Should Be True    ${product}[isDeleted]
+    Dictionary Should Contain Key    ${product}    deletedOn

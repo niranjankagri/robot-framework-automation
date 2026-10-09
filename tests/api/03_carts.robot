@@ -1,6 +1,7 @@
 *** Settings ***
 Documentation     DummyJSON carts with an authenticated session: the cart maths must add up.
-Resource          ../../resources/api/DummyJsonApi.resource
+Resource          ../../resources/api/AuthApi.resource
+Resource          ../../resources/api/CartsApi.resource
 # The token is fetched once per suite, not per test: faster, and the login is
 # already covered by the auth suite.
 Suite Setup       Create Authenticated API Session
@@ -11,8 +12,7 @@ Test Tags         api    carts
 *** Test Cases ***
 Cart Line Totals Add Up
     [Tags]    smoke
-    ${response}=    GET On Session    ${SESSION}    /carts/1
-    VAR    ${cart}    ${response.json()}
+    ${cart}=    Get Cart    1
     VAR    ${sum}    ${0}
     FOR    ${line}    IN    @{cart}[products]
         # line total = price x quantity (rounded to cents)
@@ -24,17 +24,13 @@ Cart Line Totals Add Up
     Should Be Equal As Integers    ${cart}[totalProducts]    ${{len($cart['products'])}}
 
 New Cart Contains The Added Products
-    VAR    &{line}    id=${144}    quantity=${2}
-    VAR    @{products}    ${line}
-    VAR    &{body}    userId=${1}    products=${products}
-    ${response}=    POST On Session    ${SESSION}    /carts/add    json=${body}    expected_status=201
-    VAR    ${cart}    ${response.json()}
+    ${cart}=    Add Cart    user_id=${1}    product_id=${144}    quantity=${2}
     Should Be Equal As Integers    ${cart}[totalQuantity]    2
     Should Be Equal As Integers    ${cart}[products][0][id]    144
     Should Be Equal As Numbers    ${cart}[total]    ${{round($cart['products'][0]['price'] * 2, 2)}}
 
 Carts Of A User Belong To That User
-    ${response}=    GET On Session    ${SESSION}    /carts/user/1
-    FOR    ${cart}    IN    @{response.json()}[carts]
+    ${carts}=    Get Carts Of User    1
+    FOR    ${cart}    IN    @{carts}
         Should Be Equal As Integers    ${cart}[userId]    1
     END
