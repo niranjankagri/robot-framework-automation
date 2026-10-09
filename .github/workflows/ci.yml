@@ -78,6 +78,12 @@ jobs:
           -A args/common.args -A args/ci.args
           tests
 
+      # Pass/fail table per suite and the failed tests on the run's summary page.
+      # Runs after failures too; skipped only if pabot crashed before writing output.xml.
+      - name: Write job summary
+        if: always() && hashFiles('results/output.xml') != ''
+        run: python ci/summary.py results/output.xml "${{ matrix.browser }}"
+
       # Upload even when tests failed: that is exactly when the log is needed.
       - name: Upload results
         if: always()

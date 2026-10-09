@@ -1,5 +1,7 @@
 # Robot Framework Test Automation
 
+[![CI](https://github.com/niranjankagri/robot-framework-automation/actions/workflows/ci.yml/badge.svg)](https://github.com/niranjankagri/robot-framework-automation/actions/workflows/ci.yml)
+
 UI and API test automation with **Robot Framework 7**, **SeleniumLibrary** and **RequestsLibrary**,
 built on the Page Object Model and run in parallel with **pabot**.
 
@@ -22,6 +24,7 @@ built on the Page Object Model and run in parallel with **pabot**.
 - [Tags](#tags)
 - [Writing a new test](#writing-a-new-test)
 - [Code quality](#code-quality)
+- [Continuous integration](#continuous-integration)
 - [Troubleshooting](#troubleshooting)
 
 More background on the design decisions: [docs/framework-design.md](docs/framework-design.md).
@@ -94,6 +97,8 @@ They combine: later files add to or override earlier ones.
 
 ```
 args/                         run profiles (robot/pabot argument files)
+.github/workflows/ci.yml      GitHub Actions: lint, then parallel headless run
+ci/summary.py                 writes the pass/fail table shown on each CI run page
 docs/framework-design.md      why the framework is built this way
 libraries/ShopLibrary.py      custom Python keywords (price parsing, sort check, tax maths, test data)
 resources/
@@ -202,6 +207,28 @@ Select with `--include` / `--exclude`, e.g. `--include smoke`, `--include uiANDn
 robocop check          # lint every .robot / .resource file (settings in pyproject.toml)
 robot --dryrun tests   # check syntax and that every keyword exists, without running anything
 ```
+
+## Continuous integration
+
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every push and pull request to `main`,
+by hand (Actions tab → *Run workflow*) and every night at 03:00 UTC. The nightly run matters because
+both applications under test are public sites that can change without a commit here.
+
+```
+lint  ──►  tests (browser matrix)
+ │           │
+ │           ├─ pabot --processes 4 --testlevelsplit -A args/common.args -A args/ci.args tests
+ │           ├─ job summary: pass/fail per suite + failed tests (ci/summary.py)
+ │           └─ artifact results-<browser>: log.html, report.html, output.xml, xunit.xml, screenshots
+ │
+ └─ robocop check  +  robot --dryrun   (fails in seconds on a typo or broken import)
+```
+
+- **Lint gate first**: no browser starts if the code does not even parse.
+- **Same argument files as locally**, so a CI failure can be reproduced with the same command.
+- **Results are uploaded even when tests fail** (kept 14 days); open `log.html` from the artifact.
+- No virtual environment in CI: `actions/setup-python` puts Python and `robot` on `PATH`,
+  which is what pabot's workers need.
 
 ## Troubleshooting
 
