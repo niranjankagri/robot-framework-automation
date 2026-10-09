@@ -16,6 +16,7 @@ ${LOGIN_ERROR}        css:[data-test="error"]
 
 *** Keywords ***
 Login Page Should Be Open
+    [Documentation]    Checks that the login form is shown.
     Wait Until Element Is Visible    ${LOGIN_BUTTON}
     Title Should Be    Swag Labs
 
@@ -30,6 +31,7 @@ Login As
     Click Button      ${LOGIN_BUTTON}
 
 Login Error Should Be
+    [Documentation]    Checks the red error message under the login form.
     [Arguments]    ${expected}
     Wait Until Element Is Visible    ${LOGIN_ERROR}
     Element Text Should Be    ${LOGIN_ERROR}    ${expected}

@@ -41,4 +41,3 @@ Cart Keeps Products After Continue Shopping
     Continue Shopping
     Products Page Should Be Open
     Cart Badge Should Show    1
-

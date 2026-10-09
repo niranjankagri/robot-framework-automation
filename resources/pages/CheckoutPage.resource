@@ -34,10 +34,12 @@ Enter Customer Information
     Click Button    ${CONTINUE_BUTTON}
 
 Enter Random Customer Information
+    [Documentation]    Step 1 with random names and postal code (see ShopLibrary).
     ${customer}=    Random Customer
     Enter Customer Information    ${customer}[first_name]    ${customer}[last_name]    ${customer}[postal_code]
 
 Checkout Error Should Be
+    [Documentation]    Checks the error message shown on step 1.
     [Arguments]    ${expected}
     Wait Until Element Is Visible    ${CHECKOUT_ERROR}
     Element Text Should Be    ${CHECKOUT_ERROR}    ${expected}
@@ -46,11 +48,7 @@ Overview Totals Should Be Correct
     [Documentation]    Step 2. Recalculates subtotal, 8% tax and total from the item prices
     ...                and compares them with what the page shows.
     Wait Until Element Is Visible    ${TOTAL_LABEL}
-    @{elements}=    Get WebElements    ${OVERVIEW_PRICES}
-    @{texts}=    Create List
-    FOR    ${element}    IN    @{elements}
-        Append To List    ${texts}    ${element.text}
-    END
+    ${texts}=    Get Element Texts    ${OVERVIEW_PRICES}
     ${item_prices}=    Prices From Texts    ${texts}
     ${subtotal}    ${tax}    ${total}=    Order Total    ${item_prices}
     Element Text Should Be    ${SUBTOTAL_LABEL}    Item total: $${subtotal}
@@ -58,6 +56,7 @@ Overview Totals Should Be Correct
     Element Text Should Be    ${TOTAL_LABEL}       Total: $${total}
 
 Finish Order
+    [Documentation]    Step 2: places the order.
     Click Button    ${FINISH_BUTTON}
 
 Order Should Be Complete
@@ -67,7 +66,9 @@ Order Should Be Complete
     Location Should Contain    /checkout-complete.html
 
 Back To Products
+    [Documentation]    Goes back to the product list after the order.
     Click Button    ${BACK_HOME_BUTTON}
 
 Cancel Checkout
+    [Documentation]    Cancels the checkout (on step 1 or 2).
     Click Button    ${CANCEL_BUTTON}

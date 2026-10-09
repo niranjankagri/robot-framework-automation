@@ -57,6 +57,7 @@ Customer Information Is Required
 
 *** Keywords ***
 Checkout Should Fail With
+    [Documentation]    Template: submits step 1 with a missing field and checks the error.
     [Arguments]    ${first_name}    ${last_name}    ${postal_code}    ${expected_error}
     Go To    ${UI_URL}/checkout-step-one.html
     Enter Customer Information    ${first_name}    ${last_name}    ${postal_code}

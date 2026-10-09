@@ -27,7 +27,7 @@ Search Finds Only Matching Products
     Should Be True    ${json}[total] > 0
     FOR    ${product}    IN    @{json}[products]
         # The search covers title and description, so check both.
-        ${text}=    Set Variable    ${product}[title] ${product}[description]
+        VAR    ${text}    ${product}[title] ${product}[description]
         Should Contain    ${text.lower()}    phone
     END
 
@@ -48,7 +48,7 @@ Select Returns Only Requested Fields
     END
 
 Add Product Echoes The New Product
-    ${body}=    Create Dictionary    title=Robot Test Product    price=${19.99}    category=testing
+    VAR    &{body}    title=Robot Test Product    price=${19.99}    category=testing
     ${response}=    POST On Session    ${SESSION}    /products/add    json=${body}    expected_status=201
     Should Be Equal    ${response.json()}[title]    Robot Test Product
     Should Be Equal As Numbers    ${response.json()}[price]    19.99
@@ -56,7 +56,7 @@ Add Product Echoes The New Product
 
 Update Product Changes Only The Sent Field
     ${before}=    Get Product    1
-    ${body}=    Create Dictionary    price=${12.5}
+    VAR    &{body}    price=${12.5}
     ${response}=    PUT On Session    ${SESSION}    /products/1    json=${body}
     Should Be Equal As Numbers    ${response.json()}[price]    12.5
     Should Be Equal    ${response.json()}[title]    ${before.json()}[title]

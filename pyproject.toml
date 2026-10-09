@@ -1,0 +1,12 @@
+# Settings for Robocop, the Robot Framework linter (run: robocop check).
+[tool.robocop.lint]
+ignore = [
+    # Test names already say what they check; keywords must still be documented (DOC01).
+    "DOC02",
+    # Flags RF 7 "VAR" lines as a missing "=" (VAR never takes one); "=" is used everywhere else.
+    "MISC04",
+]
+configure = [
+    # An end-to-end test walks through a whole order, so allow a few more steps.
+    "too-many-calls-in-test-case.max_calls=15",
+]

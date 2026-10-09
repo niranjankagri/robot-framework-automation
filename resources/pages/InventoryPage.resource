@@ -20,14 +20,17 @@ ${CART_LINK}          css:[data-test="shopping-cart-link"]
 
 *** Keywords ***
 Products Page Should Be Open
+    [Documentation]    Checks the title and URL of the product list.
     Wait Until Element Is Visible    ${PAGE_TITLE}
     Element Text Should Be    ${PAGE_TITLE}    Products
     Location Should Contain    /inventory.html
 
 Logout
+    [Documentation]    Logs out through the burger menu.
     Open Menu And Click    ${LOGOUT_LINK}
 
 Open Menu And Click
+    [Documentation]    Opens the burger menu and clicks one of its links.
     [Arguments]    ${link}
     Click Button    ${MENU_BUTTON}
     # The menu slides in; wait until the link is really visible before clicking.
@@ -40,26 +43,18 @@ Sort Products By
     Select From List By Label    ${SORT_SELECT}    ${label}
 
 Get Product Names
-    Wait Until Element Is Visible    ${ITEM_NAMES}
-    @{elements}=    Get WebElements    ${ITEM_NAMES}
-    @{names}=    Create List
-    FOR    ${element}    IN    @{elements}
-        Append To List    ${names}    ${element.text}
-    END
+    [Documentation]    Returns the product names in the order shown.
+    ${names}=    Get Element Texts    ${ITEM_NAMES}
     RETURN    ${names}
 
 Get Product Prices
     [Documentation]    Returns the prices as Decimals, in the order shown.
-    Wait Until Element Is Visible    ${ITEM_PRICES}
-    @{elements}=    Get WebElements    ${ITEM_PRICES}
-    @{texts}=    Create List
-    FOR    ${element}    IN    @{elements}
-        Append To List    ${texts}    ${element.text}
-    END
+    ${texts}=    Get Element Texts    ${ITEM_PRICES}
     ${prices}=    Prices From Texts    ${texts}
     RETURN    ${prices}
 
 Add Product To Cart
+    [Documentation]    Clicks the product's "Add to cart" button and waits until it turns into "Remove".
     [Arguments]    ${name}
     ${id}=    Product Id    ${name}
     Click Button    css:[data-test="add-to-cart-${id}"]
@@ -67,6 +62,7 @@ Add Product To Cart
     Wait Until Element Is Visible    css:[data-test="remove-${id}"]
 
 Remove Product From Cart
+    [Documentation]    Clicks the product's "Remove" button and waits until it turns back.
     [Arguments]    ${name}
     ${id}=    Product Id    ${name}
     Click Button    css:[data-test="remove-${id}"]
@@ -82,4 +78,5 @@ Cart Badge Should Show
     END
 
 Open Cart
+    [Documentation]    Opens the cart through the cart icon in the header.
     Click Link    ${CART_LINK}

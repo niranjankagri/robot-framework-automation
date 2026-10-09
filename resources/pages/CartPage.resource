@@ -12,6 +12,7 @@ ${CONTINUE_SHOPPING}     css:[data-test="continue-shopping"]
 
 *** Keywords ***
 Cart Page Should Be Open
+    [Documentation]    Checks that the cart page is shown.
     Wait Until Element Is Visible    ${CHECKOUT_BUTTON}
     Location Should Contain    /cart.html
 
@@ -19,19 +20,18 @@ Cart Should Contain Exactly
     [Documentation]    Compares the product names in the cart with ${expected}, ignoring order.
     [Arguments]    @{expected}
     Cart Page Should Be Open
-    @{elements}=    Get WebElements    ${CART_ITEM_NAMES}
-    @{actual}=    Create List
-    FOR    ${element}    IN    @{elements}
-        Append To List    ${actual}    ${element.text}
-    END
+    ${actual}=    Get Element Texts    ${CART_ITEM_NAMES}
     Lists Should Be Equal    ${actual}    ${expected}    ignore_order=True
 
 Cart Should Be Empty
+    [Documentation]    Checks that the cart page shows no products.
     Cart Page Should Be Open
     Page Should Not Contain Element    ${CART_ITEMS}
 
 Continue Shopping
+    [Documentation]    Goes back from the cart to the product list.
     Click Button    ${CONTINUE_SHOPPING}
 
 Go To Checkout
+    [Documentation]    Starts the checkout from the cart.
     Click Button    ${CHECKOUT_BUTTON}

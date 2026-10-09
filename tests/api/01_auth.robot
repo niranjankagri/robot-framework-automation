@@ -18,7 +18,7 @@ Valid Login Returns Tokens And User
 
 Token Gives Access To Current User
     ${token}=    Get Access Token    ${API_USER}    ${API_PASSWORD}
-    ${headers}=    Create Dictionary    Authorization=Bearer ${token}
+    VAR    &{headers}    Authorization=Bearer ${token}
     ${response}=    GET On Session    ${SESSION}    /auth/me    headers=${headers}
     Should Be Equal    ${response.json()}[username]    ${API_USER}
 
@@ -39,6 +39,7 @@ Invalid Credentials Are Rejected
 
 *** Keywords ***
 Login Should Be Rejected
+    [Documentation]    Template: the login must fail with HTTP 400 and give no token.
     [Arguments]    ${username}    ${password}
     ${response}=    Login    ${username}    ${password}    expected_status=400
     Should Be Equal    ${response.json()}[message]    Invalid credentials

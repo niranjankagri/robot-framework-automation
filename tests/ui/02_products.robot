@@ -29,6 +29,7 @@ Products Can Be Sorted
 
 *** Keywords ***
 Sorting Should Order Products
+    [Documentation]    Template: picks a sort option and checks the order of names or prices.
     [Arguments]    ${option}    ${field}    ${order}
     Sort Products By    ${option}
     IF    '${field}' == 'names'

@@ -12,8 +12,8 @@ Test Tags         api    carts
 Cart Line Totals Add Up
     [Tags]    smoke
     ${response}=    GET On Session    ${SESSION}    /carts/1
-    ${cart}=    Set Variable    ${response.json()}
-    ${sum}=    Set Variable    ${0}
+    VAR    ${cart}    ${response.json()}
+    VAR    ${sum}    ${0}
     FOR    ${line}    IN    @{cart}[products]
         # line total = price x quantity (rounded to cents)
         ${expected_line}=    Evaluate    round($line['price'] * $line['quantity'], 2)
@@ -24,11 +24,11 @@ Cart Line Totals Add Up
     Should Be Equal As Integers    ${cart}[totalProducts]    ${{len($cart['products'])}}
 
 New Cart Contains The Added Products
-    ${line}=    Create Dictionary    id=${144}    quantity=${2}
-    ${products}=    Create List    ${line}
-    ${body}=    Create Dictionary    userId=${1}    products=${products}
+    VAR    &{line}    id=${144}    quantity=${2}
+    VAR    @{products}    ${line}
+    VAR    &{body}    userId=${1}    products=${products}
     ${response}=    POST On Session    ${SESSION}    /carts/add    json=${body}    expected_status=201
-    ${cart}=    Set Variable    ${response.json()}
+    VAR    ${cart}    ${response.json()}
     Should Be Equal As Integers    ${cart}[totalQuantity]    2
     Should Be Equal As Integers    ${cart}[products][0][id]    144
     Should Be Equal As Numbers    ${cart}[total]    ${{round($cart['products'][0]['price'] * 2, 2)}}
