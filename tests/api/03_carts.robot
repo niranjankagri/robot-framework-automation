@@ -5,31 +5,35 @@ Resource          ../../resources/api/CartsApi.resource
 # The token is fetched once per suite, not per test: faster, and the login is
 # already covered by the auth suite.
 Suite Setup       Create Authenticated API Session
-Suite Teardown    Close API Sessions
+Suite Teardown    Close All API Sessions
 Test Tags         api    carts
 
 
 *** Test Cases ***
 Cart Line Totals Add Up
+    [Documentation]    Every line total is price x quantity, the cart total is the sum of
+    ...                the lines, and totalProducts is the number of lines.
     [Tags]    smoke
-    ${cart}=    Get Cart    1
-    VAR    ${sum}    ${0}
+    ${cart}=    Get Cart By Id    1
+    VAR    ${sum_of_lines}    ${0}
     FOR    ${line}    IN    @{cart}[products]
         # line total = price x quantity (rounded to cents)
-        ${expected_line}=    Evaluate    round($line['price'] * $line['quantity'], 2)
-        Should Be Equal As Numbers    ${line}[total]    ${expected_line}    precision=2
-        ${sum}=    Evaluate    $sum + $line['total']
+        ${expected_line_total}=    Evaluate    round($line['price'] * $line['quantity'], 2)
+        Should Be Equal As Numbers    ${line}[total]    ${expected_line_total}    precision=2
+        ${sum_of_lines}=    Evaluate    $sum_of_lines + $line['total']
     END
-    Should Be Equal As Numbers    ${cart}[total]    ${sum}    precision=2
+    Should Be Equal As Numbers    ${cart}[total]    ${sum_of_lines}    precision=2
     Should Be Equal As Integers    ${cart}[totalProducts]    ${{len($cart['products'])}}
 
 New Cart Contains The Added Products
-    ${cart}=    Add Cart    user_id=${1}    product_id=${144}    quantity=${2}
+    [Documentation]    A new cart with 2 pieces of one product has the right quantity and total.
+    ${cart}=    Create Cart With Product    user_id=${1}    product_id=${144}    quantity=${2}
     Should Be Equal As Integers    ${cart}[totalQuantity]    2
     Should Be Equal As Integers    ${cart}[products][0][id]    144
     Should Be Equal As Numbers    ${cart}[total]    ${{round($cart['products'][0]['price'] * 2, 2)}}
 
 Carts Of A User Belong To That User
+    [Documentation]    /carts/user/1 returns only carts whose userId is 1.
     ${carts}=    Get Carts Of User    1
     FOR    ${cart}    IN    @{carts}
         Should Be Equal As Integers    ${cart}[userId]    1

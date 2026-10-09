@@ -46,8 +46,8 @@ product name (`Product Id From Name` in `ShopLibrary.py`), so one keyword serves
 
 The API side follows the same rule as the UI side. `ApiSession.resource` owns the session aliases;
 `AuthApi`, `ProductsApi` and `CartsApi` own one endpoint group each. Read keywords return the parsed
-JSON body; keywords whose status code or headers matter to a test (`Login`, `Get Product`, the `/auth/me` calls) return the full
-response (`Login` and `Get Product` also take `expected_status`).
+JSON body; keywords whose status code or headers matter to a test (`Send Login Request`, `Get Product By Id`, the `/auth/me` calls) return the full
+response (`Send Login Request` and `Get Product By Id` also take `expected_status`).
 
 One session per suite (not per test) reuses the TCP connection. The carts suite logs in once in its
 suite setup; login itself is tested in the auth suite, so it does not need to be repeated per test.
