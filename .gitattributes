@@ -1,0 +1,7 @@
+# Store and check out text files with LF line endings on every OS, so diffs
+# are clean and git stops warning about CRLF on Windows.
+* text=auto eol=lf
+
+# Binary files: never touch their bytes.
+*.png binary
+*.pdf binary
