@@ -1,6 +1,6 @@
 *** Settings ***
 Documentation     Component object for the header shared by every logged-in page
-...               (products, cart, checkout): burger menu, cart icon and cart badge.
+...               (products, cart, checkout): side menu, cart icon and cart badge.
 ...
 ...               It is a component, not a page: it has no URL of its own, so it is kept
 ...               apart from the page objects and any page or test can use it.
@@ -8,33 +8,38 @@ Resource          ../common.resource
 
 
 *** Variables ***
-# The menu has no data-test attributes, so the stable ids are used instead.
-${MENU_BUTTON}        id:react-burger-menu-btn
-${LOGOUT_LINK}        id:logout_sidebar_link
-${RESET_LINK}         id:reset_sidebar_link
-${CART_BADGE}         css:[data-test="shopping-cart-badge"]
-${CART_LINK}          css:[data-test="shopping-cart-link"]
+# Side menu ("burger" menu). It has no data-test attributes, so the stable ids are used.
+${SIDE_MENU_BUTTON}       id:react-burger-menu-btn
+${LOGOUT_MENU_LINK}       id:logout_sidebar_link
+${RESET_MENU_LINK}        id:reset_sidebar_link
+
+# Cart icon in the top right corner and the red number on it.
+${CART_ICON_LINK}         css:[data-test="shopping-cart-link"]
+${CART_BADGE}             css:[data-test="shopping-cart-badge"]
 
 
 *** Keywords ***
-Logout
-    [Documentation]    Logs out through the burger menu.
-    Open Menu And Click    ${LOGOUT_LINK}
+Log Out Through Side Menu
+    [Documentation]    Logs the user out with the "Logout" link of the side menu.
+    ...                Sauce Demo then shows the login page again.
+    Click Link In Side Menu    ${LOGOUT_MENU_LINK}
 
-Reset App State
-    [Documentation]    Empties the cart through the burger menu ("Reset App State").
-    Open Menu And Click    ${RESET_LINK}
+Reset App State Through Side Menu
+    [Documentation]    Empties the cart with the "Reset App State" link of the side menu.
+    Click Link In Side Menu    ${RESET_MENU_LINK}
 
-Open Menu And Click
-    [Documentation]    Opens the burger menu and clicks one of its links.
+Click Link In Side Menu
+    [Documentation]    Opens the side menu and clicks the link given as ${link} (a locator).
     [Arguments]    ${link}
-    Click Button    ${MENU_BUTTON}
+    Click Button    ${SIDE_MENU_BUTTON}
     # The menu slides in; wait until the link is really visible before clicking.
     Wait Until Element Is Visible    ${link}
     Click Link    ${link}
 
-Cart Badge Should Show
-    [Documentation]    0 means the badge is not shown at all (Sauce Demo hides it when empty).
+Cart Badge Count Should Be
+    [Documentation]    Checks the number on the cart icon.
+    ...                A ${count} of 0 means the badge must not be shown at all,
+    ...                because Sauce Demo hides it when the cart is empty.
     [Arguments]    ${count}
     IF    ${count} == 0
         Page Should Not Contain Element    ${CART_BADGE}
@@ -42,6 +47,6 @@ Cart Badge Should Show
         Element Text Should Be    ${CART_BADGE}    ${count}
     END
 
-Open Cart
-    [Documentation]    Opens the cart through the cart icon in the header.
-    Click Link    ${CART_LINK}
+Open Cart Through Header Icon
+    [Documentation]    Opens the cart page by clicking the cart icon in the header.
+    Click Link    ${CART_ICON_LINK}

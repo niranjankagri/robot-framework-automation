@@ -107,7 +107,7 @@ copied next to it (`--artifacts png --artifactsinsubfolders`). In CI they are in
 ![Robot Framework report: 30 of 30 tests passed, statistics by tag and by suite](docs/images/report-overview.png)
 
 **log.html**: the end-to-end test expanded. Each step is a page-object keyword
-(`InventoryPage.Add Product To Cart`, `HeaderComponent.Open Cart`, `CartPage.Go To Checkout`, ...),
+(`InventoryPage.Add Product To Cart`, `HeaderComponent.Open Cart Through Header Icon`, `CartPage.Proceed To Checkout`, ...),
 so the log reads like the user journey.
 
 ![Robot Framework log: the end-to-end test expanded into page-object keywords](docs/images/log-e2e-test.png)
@@ -173,11 +173,26 @@ Rules the code follows:
    a `... Should Be Open` check.
 3. **Shared screen parts are components** (`HeaderComponent`): they have no URL of their own and
    appear on several pages.
-4. **Action keywords do not assert; check keywords say `Should`.** `Login As` only submits the form,
-   so the negative tests reuse it and then call `Login Error Should Be`.
+4. **Action keywords do not assert; check keywords say `Should`.** `Submit Login Form` only submits the form,
+   so the negative tests reuse it and then call `Login Error Message Should Be`.
 5. **The API side mirrors it**: one service object per endpoint group, all sharing one session per suite.
 6. **Logic that is awkward in Robot syntax goes to Python** (`ShopLibrary.py`): money with `Decimal`,
    sort checks, random test data.
+
+### Keyword naming
+
+A keyword name says what it does, so a test reads like a script for a manual tester.
+
+| Kind | Pattern | Examples |
+|---|---|---|
+| Action | verb + object (+ how) | `Submit Login Form`, `Add Product To Cart`, `Open Cart Through Header Icon`, `Proceed To Checkout` |
+| Check | subject + `Should ...` | `Products Page Should Be Open`, `Cart Badge Count Should Be`, `Login Error Message Should Be` |
+| Getter | `Get ...` (returns a value) | `Get Displayed Product Prices`, `Get Access Token`, `Get Product By Id` |
+| Navigation by URL | `Open ... Directly` | `Open Products Page Directly`, `Open Checkout Information Page Directly` |
+| Template (data-driven) | `... Should Fail With Error` / `... Should ...` | `Login Should Fail With Error`, `Selected Sort Option Should Order Products` |
+
+Locator variables are named after the element and its type: `${USERNAME_INPUT}`, `${LOGIN_BUTTON}`,
+`${CART_ICON_LINK}`, `${PRODUCT_PRICE_LABELS}` (plural when the locator matches several elements).
 
 Keyword documentation for any resource can be generated with Libdoc, e.g.:
 
@@ -265,4 +280,4 @@ lint  ──►  tests (matrix: chrome, firefox; run in parallel)
 | Every keyword "not found" after an edit | a `Library` line uses a variable before `Variables ../variables/config.py` is imported; keep `Variables` first |
 | A variable silently has the wrong value | Robot ignores case and underscores in names: `${FIRST_NAME}` and `${first_name}` are the same variable |
 | API "no token" test passes when it should fail | DummyJSON sets an `accessToken` cookie on login; use `Get Current User Without Token` (fresh session) |
-| Chrome "change your password" popup over the page | switched off in `Build Browser Options`; keep those prefs if you change the options |
+| Chrome "change your password" popup over the page | switched off in `Build Options For Selected Browser`; keep those prefs if you change the options |

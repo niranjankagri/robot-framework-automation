@@ -21,10 +21,10 @@ Robot Framework has no classes, so a "page object" is a **resource file per scre
 
 - `*** Variables ***` holds the screen's locators and URL path (private by convention: tests do not use them).
 - `*** Keywords ***` holds what a user can do there (`Add Product To Cart`) and what can be checked
-  (`Cart Badge Should Show`).
+  (`Cart Badge Count Should Be`).
 - Each page has a `... Should Be Open` keyword that waits for a landmark element and checks the URL.
-  Click-style navigation keywords (`Open Cart`, `Go To Checkout`) do not call it; the next keyword
-  that needs the page does (`Cart Should Contain Exactly` starts with `Cart Page Should Be Open`).
+  Click-style navigation keywords (`Open Cart Through Header Icon`, `Proceed To Checkout`) do not call it; the next keyword
+  that needs the page does (`Cart Should Contain Only` starts with `Cart Page Should Be Open`).
 
 **Components.** The header (burger menu, cart icon, badge) is on every logged-in page but has no URL.
 Keeping it in `InventoryPage` meant cart and checkout tests imported the product-list page just for
@@ -34,13 +34,13 @@ the header. It is now `HeaderComponent.resource`, imported by the pages and test
 and are only ever used in order, so one resource keeps the flow readable. If a step grew larger,
 it would be split into its own page object.
 
-**Actions vs checks.** Action keywords (`Login As`, `Enter Customer Information`) do not assert
+**Actions vs checks.** Action keywords (`Submit Login Form`, `Submit Customer Information`) do not assert
 the outcome; check keywords contain `Should`. That lets the negative, data-driven tests reuse the
 same actions with bad data and then check the error.
 
 **Locators.** `data-test` attributes first (made for automation, survive styling changes), `id` where
 there is no `data-test` (the burger menu), never XPath on layout. Product buttons are built from the
-product name (`Product Id` in `ShopLibrary.py`), so one keyword serves all six products.
+product name (`Product Id From Name` in `ShopLibrary.py`), so one keyword serves all six products.
 
 ## 3. Service objects for the API
 
