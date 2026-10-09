@@ -1,0 +1,4 @@
+# Exact versions so every machine (and CI) runs the same stack.
+robotframework==7.5
+robotframework-seleniumlibrary==6.9.0
+robotframework-requests==0.9.7

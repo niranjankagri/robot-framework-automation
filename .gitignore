@@ -1,0 +1,15 @@
+# Python virtual environment (created locally, see README)
+.venv/
+__pycache__/
+*.pyc
+
+# Robot Framework output (log.html, report.html, output.xml, screenshots)
+results/
+output.xml
+log.html
+report.html
+selenium-screenshot-*.png
+
+# IDE settings
+.idea/
+.vscode/
