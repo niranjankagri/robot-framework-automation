@@ -3,5 +3,8 @@ robotframework==7.5
 robotframework-seleniumlibrary==6.9.0
 robotframework-requests==0.9.7
 
+# Runs suites/tests in parallel processes and merges the results into one report.
+robotframework-pabot==5.2.2
+
 # Linter for .robot/.resource files (config in pyproject.toml).
 robotframework-robocop==9.1.0

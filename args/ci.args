@@ -1,0 +1,9 @@
+# Settings for a machine without a screen (GitHub Actions, Docker, a build server).
+# Combine with common.args, e.g.  pabot ... -A args/common.args -A args/ci.args tests
+
+# No browser window; config.py reads this as a real boolean.
+--variable HEADLESS:True
+# JUnit-style XML that CI servers can show as a test report.
+--xunit xunit.xml
+# Fewer details in log.html keeps the file small; failures still show every keyword.
+--loglevel INFO

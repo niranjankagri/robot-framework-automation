@@ -1,0 +1,3 @@
+# Smoke run: only the tests tagged "smoke" (main flows of UI and API, 8 tests).
+# Combine with the other files, e.g.  robot -A args/common.args -A args/smoke.args tests
+--include smoke

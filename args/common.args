@@ -1,0 +1,14 @@
+# Options every run shares. Robot reads one option per line; "#" lines are comments.
+# Use:  robot -A args/common.args tests      (or with pabot, see README)
+
+# All output (output.xml, log.html, report.html, screenshots) in one ignored folder.
+--outputdir results
+# Report title and suite name instead of the folder name "Tests".
+--name Robot Framework Automation
+--reporttitle Robot Framework Automation Report
+--logtitle Robot Framework Automation Log
+# Tag descriptions shown in report.html (statistics by tag). In an argument file
+# everything after the first space is the value, so no quoting is needed.
+--tagdoc smoke:Fast checks of the main flows
+--tagdoc negative:Wrong input must be rejected
+--tagdoc e2e:A whole user journey

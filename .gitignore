@@ -13,3 +13,7 @@ selenium-screenshot-*.png
 # IDE settings
 .idea/
 .vscode/
+
+# pabot (parallel runs): its own work folders and the suite-order cache
+pabot_results/
+.pabotsuitenames
