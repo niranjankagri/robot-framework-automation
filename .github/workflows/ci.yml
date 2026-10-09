@@ -54,7 +54,8 @@ jobs:
     strategy:
       fail-fast: false          # one browser failing should not cancel the other
       matrix:
-        browser: [chrome]
+        # Both browsers are preinstalled on ubuntu-latest; Selenium Manager gets the drivers.
+        browser: [chrome, firefox]
     steps:
       - uses: actions/checkout@v4
 
@@ -64,8 +65,7 @@ jobs:
           cache: pip
 
       # setup-python puts its Python on PATH, so "robot" is found by pabot's workers
-      # without a virtual environment. Chrome is preinstalled on ubuntu-latest and
-      # Selenium Manager fetches the matching driver.
+      # without a virtual environment.
       - name: Install dependencies
         run: pip install -r requirements.txt
 

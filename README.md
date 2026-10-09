@@ -215,7 +215,7 @@ by hand (Actions tab → *Run workflow*) and every night at 03:00 UTC. The night
 both applications under test are public sites that can change without a commit here.
 
 ```
-lint  ──►  tests (browser matrix)
+lint  ──►  tests (matrix: chrome, firefox; run in parallel)
  │           │
  │           ├─ pabot --processes 4 --testlevelsplit --outputdir results -A args/common.args -A args/ci.args tests
  │           ├─ job summary: pass/fail per suite + failed tests (ci/summary.py)
