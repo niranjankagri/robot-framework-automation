@@ -55,14 +55,14 @@ All commands run from the project root with the venv active. Results go to `resu
 ```bash
 # Everything, 4 processes, one test per process slot
 pabot --processes 4 --testlevelsplit --artifacts png --artifactsinsubfolders \
-      -A args/common.args tests
+      --outputdir results -A args/common.args tests
 
 # Same, headless and with xunit.xml (what a CI server would run)
 pabot --processes 4 --testlevelsplit --artifacts png --artifactsinsubfolders \
-      -A args/common.args -A args/ci.args tests
+      --outputdir results -A args/common.args -A args/ci.args tests
 
 # Smoke only (8 tests, ~25 s)
-pabot --processes 4 --testlevelsplit -A args/common.args -A args/ci.args -A args/smoke.args tests
+pabot --processes 4 --testlevelsplit --outputdir results -A args/common.args -A args/ci.args -A args/smoke.args tests
 ```
 
 | pabot option | Why |
@@ -76,10 +76,10 @@ pabot --processes 4 --testlevelsplit -A args/common.args -A args/ci.args -A args
 Same argument files, one process. Handy when debugging a single test with the browser visible:
 
 ```bash
-robot -A args/common.args tests                       # everything
-robot -A args/common.args tests/ui/03_cart.robot      # one suite
-robot -A args/common.args --test "User Can Buy Two Products" tests
-robot -A args/common.args --include api tests         # by tag
+robot --outputdir results -A args/common.args tests                       # everything
+robot --outputdir results -A args/common.args tests/ui/03_cart.robot      # one suite
+robot --outputdir results -A args/common.args --test "User Can Buy Two Products" tests
+robot --outputdir results -A args/common.args --include api tests         # by tag
 ```
 
 ### Argument files (`args/`)
@@ -89,7 +89,7 @@ They combine: later files add to or override earlier ones.
 
 | File | What it sets |
 |---|---|
-| [`args/common.args`](args/common.args) | output folder, report/log titles, tag descriptions; use it every time |
+| [`args/common.args`](args/common.args) | report/log titles, tag descriptions; use it every time |
 | [`args/ci.args`](args/ci.args) | headless browser, `xunit.xml`, log level INFO |
 | [`args/smoke.args`](args/smoke.args) | only tests tagged `smoke` |
 
@@ -165,8 +165,8 @@ Every setting is in [`variables/config.py`](variables/config.py) and can be chan
 either as an environment variable or with `--variable` (the command line wins):
 
 ```bash
-robot -A args/common.args --variable BROWSER:firefox --variable HEADLESS:True tests/ui
-BROWSER=edge pabot --processes 2 -A args/common.args tests/ui      # Git Bash / Linux
+robot --outputdir results -A args/common.args --variable BROWSER:firefox --variable HEADLESS:True tests/ui
+BROWSER=edge pabot --processes 2 --outputdir results -A args/common.args tests/ui      # Git Bash / Linux
 ```
 
 | Variable | Default | Meaning |
@@ -217,7 +217,7 @@ both applications under test are public sites that can change without a commit h
 ```
 lint  ──►  tests (browser matrix)
  │           │
- │           ├─ pabot --processes 4 --testlevelsplit -A args/common.args -A args/ci.args tests
+ │           ├─ pabot --processes 4 --testlevelsplit --outputdir results -A args/common.args -A args/ci.args tests
  │           ├─ job summary: pass/fail per suite + failed tests (ci/summary.py)
  │           └─ artifact results-<browser>: log.html, report.html, output.xml, xunit.xml, screenshots
  │
@@ -234,6 +234,7 @@ lint  ──►  tests (browser matrix)
 
 | Symptom | Cause / fix |
 |---|---|
+| pabot: "output files are incomplete", worker logs all say `Output: results\output.xml` | an `--outputdir` inside an argument file overrides pabot's per-worker folders; keep `--outputdir` on the command line only |
 | pabot: `0 tests` and `FileNotFoundError: [WinError 2]` | the venv is not active; pabot starts its workers as `robot`, which must be on `PATH` |
 | Every keyword "not found" after an edit | a `Library` line uses a variable before `Variables ../variables/config.py` is imported; keep `Variables` first |
 | A variable silently has the wrong value | Robot ignores case and underscores in names: `${FIRST_NAME}` and `${first_name}` are the same variable |

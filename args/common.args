@@ -1,8 +1,9 @@
 # Options every run shares. Robot reads one option per line; "#" lines are comments.
-# Use:  robot -A args/common.args tests      (or with pabot, see README)
+# Use:  robot --outputdir results -A args/common.args tests      (or with pabot, see README)
 
-# All output (output.xml, log.html, report.html, screenshots) in one ignored folder.
---outputdir results
+# No --outputdir here on purpose: pabot gives every worker its own output folder
+# and an --outputdir in an argument file would override it (all workers would
+# write the same output.xml). Pass --outputdir on the command line instead.
 # Report title and suite name instead of the folder name "Tests".
 --name Robot Framework Automation
 --reporttitle Robot Framework Automation Report

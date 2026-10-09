@@ -75,7 +75,7 @@ jobs:
         run: >
           pabot --processes 4 --testlevelsplit
           --artifacts png --artifactsinsubfolders
-          -A args/common.args -A args/ci.args
+          --outputdir results -A args/common.args -A args/ci.args
           tests
 
       # Pass/fail table per suite and the failed tests on the run's summary page.

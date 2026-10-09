@@ -78,6 +78,10 @@ Long command lines get copied wrongly and drift between machines and CI. The `ar
 version-controlled run profiles that combine (`-A common -A ci -A smoke`). The same files work for
 `robot` and `pabot`, so a serial debug run and the parallel CI run use the same settings.
 
+The one option kept out of them is `--outputdir`: pabot gives each worker its own output folder,
+and an `--outputdir` inside an argument file would override it, so all workers would overwrite the
+same `output.xml` and the merged report would be empty.
+
 ## 6. Configuration
 
 `variables/config.py` is a Python variable file: every value has a default for a local run, an
