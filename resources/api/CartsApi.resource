@@ -11,6 +11,7 @@ Resource          ApiSession.resource
 Get Cart By Id
     [Documentation]    GET /carts/{id}. Returns the cart as a dict (products, totals, userId).
     [Arguments]    ${id}
+    # No expected_status: RequestsLibrary fails on any 4xx/5xx by default.
     ${response}=    GET On Session    ${SESSION}    /carts/${id}
     RETURN    ${response.json()}
 
@@ -18,6 +19,7 @@ Get Carts Of User
     [Documentation]    GET /carts/user/{user_id}. Returns the list of that user's carts.
     [Arguments]    ${user_id}
     ${response}=    GET On Session    ${SESSION}    /carts/user/${user_id}
+    # The body wraps the list ({"carts": [...], "total": ...}); return only the list.
     RETURN    ${response.json()}[carts]
 
 Create Cart With Product

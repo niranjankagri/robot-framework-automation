@@ -25,6 +25,7 @@ Open Login Page
 Login Page Should Be Open
     [Documentation]    Waits for the login form and checks the page title.
     Wait Until Element Is Visible    ${LOGIN_BUTTON}
+    # "Swag Labs" is the browser tab title of the Sauce Demo pages.
     Title Should Be    Swag Labs
 
 Submit Login Form
@@ -34,6 +35,7 @@ Submit Login Form
     ...                ``Products Page Should Be Open``, negative tests with
     ...                ``Login Error Message Should Be``.
     [Arguments]    ${username}    ${password}
+    # Make sure the form is there before typing into it.
     Login Page Should Be Open
     Input Text        ${USERNAME_INPUT}    ${username}
     # Input Password keeps the value out of log.html.
@@ -44,6 +46,7 @@ Login Error Message Should Be
     [Documentation]    Checks the red error message shown under the login form.
     [Arguments]    ${expected_message}
     Wait Until Element Is Visible    ${LOGIN_ERROR_MESSAGE}
+    # Exact text, so a wrong message (e.g. "locked out" instead of "wrong password") fails.
     Element Text Should Be    ${LOGIN_ERROR_MESSAGE}    ${expected_message}
 
 Open Browser And Log In
@@ -52,4 +55,5 @@ Open Browser And Log In
     [Arguments]    ${username}=${STANDARD_USER}
     Open Browser On Login Page
     Submit Login Form    ${username}    ${PASSWORD}
+    # The setup fails here if the login did not work, so the test body never starts.
     Products Page Should Be Open

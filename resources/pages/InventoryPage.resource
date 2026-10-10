@@ -6,6 +6,7 @@ Documentation     Page object for the product list (inventory page, /inventory.h
 ...               a test that uses this page can also use the header keywords.
 Resource          ../common.resource
 Resource          ../components/HeaderComponent.resource
+# ShopLibrary: Product Id From Name and Parse Prices.
 Library           ../../libraries/ShopLibrary.py
 
 
@@ -34,6 +35,7 @@ Products Page Should Be Open
 Sort Products By
     [Documentation]    Picks a sort option by its visible text, e.g. "Price (low to high)".
     [Arguments]    ${option_label}
+    # The sort control is a real <select>, so SeleniumLibrary's list keywords work on it.
     Select From List By Label    ${SORT_DROPDOWN}    ${option_label}
 
 Get Displayed Product Names
@@ -45,6 +47,7 @@ Get Displayed Product Prices
     [Documentation]    Returns the product prices as a list of Decimals (e.g. 29.99),
     ...                in the order the page shows them.
     ${price_texts}=    Get Texts Of All Matching Elements    ${PRODUCT_PRICE_LABELS}
+    # "$29.99" -> Decimal("29.99"), so prices compare as numbers, not as text.
     ${prices}=    Parse Prices    ${price_texts}
     RETURN    ${prices}
 
@@ -64,4 +67,5 @@ Remove Product From Cart
     [Arguments]    ${product_name}
     ${id}=    Product Id From Name    ${product_name}
     Click Button    css:[data-test="remove-${id}"]
+    # Waiting for the swap back means the next step sees the updated cart badge.
     Wait Until Element Is Visible    css:[data-test="add-to-cart-${id}"]

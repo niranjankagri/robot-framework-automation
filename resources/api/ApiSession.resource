@@ -6,7 +6,9 @@ Documentation     HTTP session handling for DummyJSON (https://dummyjson.com).
 ...               (AuthApi, ProductsApi, CartsApi) and tests only call those keywords.
 ...               This file holds what they all share: the session alias and how
 ...               sessions are opened and closed.
+# API_URL, API_USER and API_PASSWORD come from the shared config file.
 Variables         ../../variables/config.py
+# Collections: Dictionary Should Contain Key. RequestsLibrary: the HTTP calls.
 Library           Collections
 Library           RequestsLibrary
 
@@ -37,7 +39,9 @@ Create Session With Bearer Token
     [Documentation]    Re-creates the shared session so that every request sends
     ...                ``Authorization: Bearer ${token}``.
     [Arguments]    ${token}
+    # Headers given to Create Session are sent with every request of that session.
     VAR    &{headers}    Authorization=Bearer ${token}
+    # Same alias as Create API Session: the service objects keep using ${SESSION}.
     Create Session    ${SESSION}    ${API_URL}    headers=${headers}    disable_warnings=1    max_retries=2
 
 Close All API Sessions
@@ -48,6 +52,7 @@ JSON Should Contain Fields
     [Documentation]    Lightweight contract check: fails if any of @{fields} is missing
     ...                from the JSON object ${json_object} (a dict). Extra fields are allowed.
     [Arguments]    ${json_object}    @{fields}
+    # One check per field, so the error names exactly the field that is missing.
     FOR    ${field}    IN    @{fields}
         Dictionary Should Contain Key    ${json_object}    ${field}    Missing field '${field}'
     END

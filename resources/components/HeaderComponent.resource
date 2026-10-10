@@ -42,8 +42,10 @@ Cart Badge Count Should Be
     ...                because Sauce Demo hides it when the cart is empty.
     [Arguments]    ${count}
     IF    ${count} == 0
+        # Checks the page as it is now, without waiting: an empty cart has no badge at all.
         Page Should Not Contain Element    ${CART_BADGE}
     ELSE
+        # Compares the badge text with the expected count, e.g. "2".
         Element Text Should Be    ${CART_BADGE}    ${count}
     END
 

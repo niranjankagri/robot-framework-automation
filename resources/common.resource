@@ -18,6 +18,7 @@ Open Browser On Login Page
     ...                Browser, headless mode and window size come from variables/config.py,
     ...                so the same test runs on Chrome, Firefox or Edge without changes.
     ${options}=    Build Options For Selected Browser
+    # Selenium Manager finds or downloads the matching driver, so no driver path is needed.
     Open Browser    ${UI_URL}    ${BROWSER}    options=${options}
     # A fixed window size keeps the page layout (and screenshots) the same on every machine.
     Set Window Size    ${WINDOW_WIDTH}    ${WINDOW_HEIGHT}
@@ -53,6 +54,7 @@ Build Options For Selected Browser
     ...    add_argument("--disable-search-engine-choice-screen");
     ...    add_experimental_option("prefs", ${prefs})
     ...    separator=${EMPTY}
+    # "--headless=new" is Chrome's current headless mode, which renders like a normal window.
     IF    ${HEADLESS}    VAR    ${options}    add_argument("--headless=new");${options}
     RETURN    ${options}
 
@@ -64,9 +66,11 @@ Get Texts Of All Matching Elements
     ...                mistaken for "no elements": the keyword fails instead.
     [Arguments]    ${locator}
     Wait Until Element Is Visible    ${locator}
+    # Get WebElements returns every match (an empty list if none), in page order.
     @{elements}=    Get WebElements    ${locator}
     VAR    @{texts}    @{EMPTY}
     FOR    ${element}    IN    @{elements}
+        # .text is the text the user sees (hidden text is left out).
         Append To List    ${texts}    ${element.text}
     END
     RETURN    ${texts}

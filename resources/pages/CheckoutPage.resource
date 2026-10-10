@@ -5,6 +5,7 @@ Documentation     Page objects for the three checkout steps:
 ...               The three steps are one flow with shared buttons (Continue, Cancel),
 ...               so they share one resource file instead of three tiny ones.
 Resource          ../common.resource
+# ShopLibrary: Generate Random Customer, Parse Prices and Calculate Order Totals.
 Library           ../../libraries/ShopLibrary.py
 
 
@@ -44,7 +45,9 @@ Submit Customer Information
     [Documentation]    Step 1: fills in the three fields and clicks "Continue".
     ...                Empty values are allowed, so negative tests can leave a field blank.
     [Arguments]    ${first_name}    ${last_name}    ${postal_code}
+    # The form may still be loading right after the click on "Checkout".
     Wait Until Element Is Visible    ${FIRST_NAME_INPUT}
+    # Input Text clears each field first, so old values never mix with new ones.
     Input Text    ${FIRST_NAME_INPUT}     ${first_name}
     Input Text    ${LAST_NAME_INPUT}      ${last_name}
     Input Text    ${POSTAL_CODE_INPUT}    ${postal_code}
@@ -53,6 +56,7 @@ Submit Customer Information
 Submit Random Customer Information
     [Documentation]    Step 1 with a random name and postal code (see ShopLibrary),
     ...                which shows the form does not depend on one fixed value.
+    # A dict with first_name, last_name and postal_code.
     ${customer}=    Generate Random Customer
     Submit Customer Information    ${customer}[first_name]    ${customer}[last_name]    ${customer}[postal_code]
 
@@ -65,10 +69,13 @@ Checkout Error Message Should Be
 Overview Totals Should Match Item Prices Plus Tax
     [Documentation]    Step 2: recalculates subtotal, 8% tax and total from the item prices
     ...                on the page and checks that the three labels show the same amounts.
+    # The total label is the last part of the overview to render.
     Wait Until Element Is Visible    ${TOTAL_LABEL}
+    # "$29.99" texts -> Decimals, then the expected totals in exact money maths.
     ${price_texts}=    Get Texts Of All Matching Elements    ${ITEM_PRICE_LABELS}
     ${item_prices}=    Parse Prices    ${price_texts}
     ${subtotal}    ${tax}    ${total}=    Calculate Order Totals    ${item_prices}
+    # "$$" is "$" followed by a variable: "Item total: $" + "29.99".
     Element Text Should Be    ${SUBTOTAL_LABEL}    Item total: $${subtotal}
     Element Text Should Be    ${TAX_LABEL}         Tax: $${tax}
     Element Text Should Be    ${TOTAL_LABEL}       Total: $${total}
@@ -81,6 +88,7 @@ Order Confirmation Should Be Shown
     [Documentation]    Step 3: checks the "Thank you for your order!" page.
     Wait Until Element Is Visible    ${CONFIRMATION_HEADER}
     Element Text Should Be    ${CONFIRMATION_HEADER}    Thank you for your order!
+    # The URL proves it is the real confirmation step, not a message on another page.
     Location Should Contain    ${COMPLETE_PATH}
 
 Return To Products After Order

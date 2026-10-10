@@ -33,6 +33,7 @@ def _cell(text):
 
 def build_summary(output_xml, title):
     """Return the Markdown summary for one output.xml."""
+    # Robot's own result API reads output.xml (also the merged one pabot writes).
     result = ExecutionResult(output_xml)
     total = result.statistics.total
     icon = "✅" if total.failed == 0 else "❌"
@@ -40,6 +41,7 @@ def build_summary(output_xml, title):
         f"## {icon} Robot Framework: {title}",
         "",
         f"**{total.passed} passed**, **{total.failed} failed**, {total.skipped} skipped"
+        # elapsed_time is a timedelta; cutting at "." drops the microseconds (0:01:05).
         f" of {total.total} tests · elapsed {str(result.suite.elapsed_time).split('.')[0]}",
         "",
         "| Suite | Passed | Failed | Skipped |",
@@ -52,8 +54,10 @@ def build_summary(output_xml, title):
         name = " / ".join(suite.full_name.split(".")[1:])
         lines.append(f"| {_cell(name)} | {stats.passed} | {stats.failed} | {stats.skipped} |")
 
+    # Walk the whole result tree once and collect the failed tests.
     collector = FailedTests()
     result.visit(collector)
+    # The failures table is only added when something failed.
     if collector.failed:
         lines += ["", "### Failed tests", "", "| Suite | Test | Message |", "|---|---|---|"]
         for suite, test, message in collector.failed:
@@ -76,6 +80,7 @@ def main():
     markdown = build_summary(sys.argv[1], sys.argv[2])
     target = os.environ.get("GITHUB_STEP_SUMMARY")
     if target:
+        # Append, not overwrite: other steps of the job may have written to it too.
         with open(target, "a", encoding="utf-8") as file:
             file.write(markdown)
     else:

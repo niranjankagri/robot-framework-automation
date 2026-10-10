@@ -45,9 +45,11 @@ class ShopLibrary:
         """
         prices = []
         for text in price_texts:
+            # search, not match: the amount can follow a label ("Item total: $29.99").
             match = _PRICE_PATTERN.search(text)
             if not match:
                 raise AssertionError(f"No price found in '{text}'")
+            # Decimal from the text "29.99", never from a float, so no rounding error creeps in.
             prices.append(Decimal(match.group(1)))
         return prices
 
@@ -58,9 +60,12 @@ class ShopLibrary:
         Strings are compared case-insensitively, as a shop sorts names.
         The error message lists the values, so a failure shows the wrong order.
         """
+        # A typo such as "ascend" must fail loudly, not silently check the wrong order.
         if order not in ("ascending", "descending"):
             raise ValueError(f"order must be ascending or descending, not '{order}'")
+        # Lower-case only strings; numbers (prices) are compared as they are.
         keys = [v.lower() if isinstance(v, str) else v for v in values]
+        # Sort a copy and compare: equal lists mean the page order was already sorted.
         expected = sorted(keys, reverse=(order == "descending"))
         if keys != expected:
             raise AssertionError(f"Not sorted {order}: {list(values)}")
@@ -72,7 +77,9 @@ class ShopLibrary:
 
         Tax is rounded half up, like the shop does: 0.125 -> 0.13.
         """
+        # Decimal(str(...)) accepts Decimals, ints and text; the Decimal("0") start keeps the sum a Decimal.
         subtotal = sum((Decimal(str(price)) for price in item_prices), Decimal("0"))
+        # quantize to 0.01 = round to whole cents.
         tax = (subtotal * Decimal(tax_rate)).quantize(Decimal("0.01"), ROUND_HALF_UP)
         return subtotal, tax, subtotal + tax
 
@@ -83,6 +90,7 @@ class ShopLibrary:
         Random data shows the checkout form does not depend on one fixed value.
         """
         letters = string.ascii_lowercase
+        # Fixed prefixes make test data easy to spot; 5 random characters make each run differ.
         return {
             "first_name": "Test" + "".join(random.choices(letters, k=5)),
             "last_name": "User" + "".join(random.choices(letters, k=5)),

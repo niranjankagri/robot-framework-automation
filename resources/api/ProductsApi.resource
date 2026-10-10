@@ -19,6 +19,7 @@ Search Products
     [Documentation]    GET /products/search?q=${query}. Returns the result as a dict:
     ...                ``products`` (list), ``total``, ``skip``, ``limit``.
     [Arguments]    ${query}    ${limit}=30
+    # params= builds and URL-encodes the query string (?q=...&limit=...).
     VAR    &{params}    q=${query}    limit=${limit}
     ${response}=    GET On Session    ${SESSION}    /products/search    params=${params}
     RETURN    ${response.json()}
@@ -29,6 +30,7 @@ List Products Page
     ...                Returns the page as a dict: ``products`` (list), ``total``, ``skip``, ``limit``.
     [Arguments]    ${limit}=30    ${skip}=0    ${select}=${EMPTY}
     VAR    &{params}    limit=${limit}    skip=${skip}
+    # Send select only when it is given, so a plain call gets every field of each product.
     IF    $select    Set To Dictionary    ${params}    select=${select}
     ${response}=    GET On Session    ${SESSION}    /products    params=${params}
     RETURN    ${response.json()}
@@ -38,6 +40,7 @@ Add Product
     ...                e.g. ``title=Pen    price=${1.5}``. Fails unless the API answers 201;
     ...                returns the "created" product as a dict.
     [Arguments]    &{fields}
+    # The named arguments arrive as one dict, which is sent as the JSON body as it is.
     ${response}=    POST On Session    ${SESSION}    /products/add    json=${fields}    expected_status=201
     RETURN    ${response.json()}
 
