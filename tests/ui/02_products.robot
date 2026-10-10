@@ -17,12 +17,14 @@ Products Page Lists Six Products
 
 Default Sort Is Name A To Z
     [Documentation]    Without choosing a sort option, products are listed by name A to Z.
+    # No Sort Products By here: this checks the order the page opens with.
     @{names}=    Get Displayed Product Names
     Values Should Be Sorted    ${names}    ascending
 
 Products Can Be Sorted
     [Documentation]    Data-driven: each row picks a sort option and checks that the names or
     ...                prices shown are in the expected order.
+    # Each row below is one call of the template keyword with these arguments.
     [Template]    Selected Sort Option Should Order Products
     # sort option            sorted by    expected order
     Name (A to Z)            names        ascending
@@ -37,6 +39,7 @@ Selected Sort Option Should Order Products
     ...                checks the order of the product ${field} ("names" or "prices").
     [Arguments]    ${option}    ${field}    ${order}
     Sort Products By    ${option}
+    # Read the column the option sorts by.
     IF    '${field}' == 'names'
         ${values}=    Get Displayed Product Names
     ELSE
