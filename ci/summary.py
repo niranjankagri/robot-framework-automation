@@ -20,6 +20,7 @@ class FailedTests(ResultVisitor):
         self.failed = []
 
     def visit_test(self, test):
+        """Called by Robot for every test in the result; keeps the failed ones."""
         if test.failed:
             # First line only: Robot messages can be long multi-line diffs.
             message = test.message.splitlines()[0] if test.message else ""
@@ -75,6 +76,7 @@ def _leaf_suites(suite):
 
 
 def main():
+    """Reads output.xml and the title from the command line and writes the summary."""
     if len(sys.argv) != 3:
         sys.exit("usage: python ci/summary.py <output.xml> <title>")
     markdown = build_summary(sys.argv[1], sys.argv[2])

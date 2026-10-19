@@ -26,6 +26,9 @@ _PRICE_PATTERN = re.compile(r"\$(\d+(?:\.\d{2})?)")
 
 @library(scope="GLOBAL")  # stateless, so one instance for the whole run is enough
 class ShopLibrary:
+    """Python keywords for what Robot syntax does awkwardly: product ids, exact money maths with Decimal, sort
+    checks and random test data.
+    """
 
     @keyword
     def product_id_from_name(self, product_name):
