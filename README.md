@@ -27,6 +27,7 @@ built on the Page Object Model and run in parallel with **pabot**.
 - [Code quality](#code-quality)
 - [Continuous integration](#continuous-integration)
 - [Troubleshooting](#troubleshooting)
+- [License](#license)
 
 More background on the design decisions: [docs/framework-design.md](docs/framework-design.md).
 
@@ -273,6 +274,9 @@ lint  ──►  tests (matrix: chrome, firefox; run in parallel)
 - **Lint gate first**: no browser starts if the code does not even parse.
 - **Same argument files as locally**, so a CI failure can be reproduced with the same command.
 - **Results are uploaded even when tests fail** (kept 14 days); open `log.html` from the artifact.
+  [Automation Coverage & Quality Intelligence](https://github.com/niranjankagri/automation-coverage-quality-intelligence) reads its
+  `xunit.xml` for its cross-repository dashboard.
+- **Protected `main`**: a ruleset lets changes in only through a pull request, after lint and both browser jobs pass.
 - No virtual environment in CI: `actions/setup-python` puts Python and `robot` on `PATH`,
   which is what pabot's workers need.
 
@@ -286,3 +290,7 @@ lint  ──►  tests (matrix: chrome, firefox; run in parallel)
 | A variable silently has the wrong value | Robot ignores case and underscores in names: `${FIRST_NAME}` and `${first_name}` are the same variable |
 | API "no token" test passes when it should fail | DummyJSON sets an `accessToken` cookie on login; use `Get Current User Without Token` (fresh session) |
 | Chrome "change your password" popup over the page | switched off in `Build Options For Selected Browser`; keep those prefs if you change the options |
+
+## License
+
+[MIT](LICENSE)
