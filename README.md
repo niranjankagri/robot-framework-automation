@@ -277,6 +277,7 @@ lint  ──►  tests (matrix: chrome, firefox; run in parallel)
   [Automation Coverage & Quality Intelligence](https://github.com/niranjankagri/automation-coverage-quality-intelligence) reads its
   `xunit.xml` for its cross-repository dashboard.
 - **Protected `main`**: a ruleset lets changes in only through a pull request, after lint and both browser jobs pass.
+- **Dependabot**: dependency and GitHub Actions updates once a month (minor and patch grouped, major versions as separate pull requests).
 - No virtual environment in CI: `actions/setup-python` puts Python and `robot` on `PATH`,
   which is what pabot's workers need.
 
