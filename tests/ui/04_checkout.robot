@@ -12,10 +12,10 @@ Test Tags         ui    checkout
 
 
 *** Test Cases ***
-User Can Buy Two Products
+[TC-112] User Can Buy Two Products
     [Documentation]    End to end: products -> cart -> information -> overview -> complete,
     ...                and the cart is empty again after the order.
-    [Tags]    smoke    e2e
+    [Tags]    smoke    e2e    TC-112
     # Products page: fill the cart.
     Add Product To Cart    Sauce Labs Backpack
     Add Product To Cart    Sauce Labs Fleece Jacket
@@ -34,9 +34,10 @@ User Can Buy Two Products
     Return To Products After Order
     Products Page Should Be Open
 
-Order Totals Include Eight Percent Tax
+[TC-113] Order Totals Include Eight Percent Tax
     [Documentation]    Three products of different prices, so the rounding of the tax
     ...                to cents is checked too.
+    [Tags]    TC-113
     Add Product To Cart    Sauce Labs Bike Light
     Add Product To Cart    Sauce Labs Bolt T-Shirt
     Add Product To Cart    Sauce Labs Onesie
@@ -46,9 +47,10 @@ Order Totals Include Eight Percent Tax
     Submit Random Customer Information
     Overview Totals Should Match Item Prices Plus Tax
 
-Cancel On Overview Keeps The Cart
+[TC-114] Cancel On Overview Keeps The Cart
     [Documentation]    Cancelling on the overview step returns to the products and keeps
     ...                the product in the cart (no order is placed).
+    [Tags]    TC-114
     Add Product To Cart    Sauce Labs Backpack
     Open Cart Through Header Icon
     Proceed To Checkout
@@ -59,10 +61,10 @@ Cancel On Overview Keeps The Cart
     Products Page Should Be Open
     Cart Badge Count Should Be    1
 
-Customer Information Is Required
+[TC-115] Customer Information Is Required
     [Documentation]    Data-driven: each row leaves one field of step 1 empty and checks
     ...                the error message for that field.
-    [Tags]    negative
+    [Tags]    negative    TC-115
     # Each row below is one call of the template keyword with these arguments.
     [Template]    Checkout Form Should Fail With Error
     # first name    last name    postal code    expected error

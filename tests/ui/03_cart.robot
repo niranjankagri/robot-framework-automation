@@ -18,9 +18,9 @@ ${ONESIE}         Sauce Labs Onesie
 
 
 *** Test Cases ***
-Added Products Appear In The Cart
+[TC-108] Added Products Appear In The Cart
     [Documentation]    Two added products are counted on the badge and listed in the cart.
-    [Tags]    smoke
+    [Tags]    smoke    TC-108
     Add Product To Cart    ${BACKPACK}
     Add Product To Cart    ${BIKE_LIGHT}
     # Check both places: the badge in the header and the cart page itself.
@@ -28,8 +28,9 @@ Added Products Appear In The Cart
     Open Cart Through Header Icon
     Cart Should Contain Only    ${BACKPACK}    ${BIKE_LIGHT}
 
-Removing A Product Updates The Badge
+[TC-109] Removing A Product Updates The Badge
     [Documentation]    Each removal lowers the badge count; removing the last product hides it.
+    [Tags]    TC-109
     Add Product To Cart    ${BACKPACK}
     Add Product To Cart    ${ONESIE}
     # 2 -> 1: the count goes down by one.
@@ -39,14 +40,16 @@ Removing A Product Updates The Badge
     Remove Product From Cart    ${ONESIE}
     Cart Badge Count Should Be    0
 
-Cart Is Empty For A New Session
+[TC-110] Cart Is Empty For A New Session
     [Documentation]    A user who just logged in starts with an empty cart.
+    [Tags]    TC-110
     # Nothing is added: a product left over from another test would show up here.
     Open Cart Through Header Icon
     Cart Should Be Empty
 
-Cart Keeps Products After Continue Shopping
+[TC-111] Cart Keeps Products After Continue Shopping
     [Documentation]    Going back from the cart to the product list must not lose the cart.
+    [Tags]    TC-111
     Add Product To Cart    ${BACKPACK}
     Open Cart Through Header Icon
     Continue Shopping From Cart

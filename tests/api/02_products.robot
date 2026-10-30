@@ -10,9 +10,9 @@ Test Tags         api    products
 
 
 *** Test Cases ***
-Product Can Be Fetched By Id
+[TC-205] Product Can Be Fetched By Id
     [Documentation]    A product has the fields a shop client needs, and a positive price.
-    [Tags]    smoke
+    [Tags]    smoke    TC-205
     ${response}=    Get Product By Id    1
     # Contract check: the fields a product page would show must all be there.
     JSON Should Contain Fields    ${response.json()}
@@ -21,15 +21,16 @@ Product Can Be Fetched By Id
     Should Be Equal As Integers    ${response.json()}[id]    1
     Should Be True    ${response.json()}[price] > 0
 
-Unknown Product Returns 404
+[TC-206] Unknown Product Returns 404
     [Documentation]    An id that does not exist gets 404 with a clear message.
-    [Tags]    negative
+    [Tags]    negative    TC-206
     # An id far above the catalogue size, so it cannot exist.
     ${response}=    Get Product By Id    999999    expected_status=404
     Should Be Equal    ${response.json()}[message]    Product with id '999999' not found
 
-Search Finds Only Matching Products
+[TC-207] Search Finds Only Matching Products
     [Documentation]    Searching "phone" finds products, and each of them mentions "phone".
+    [Tags]    TC-207
     ${search_result}=    Search Products    phone
     # An empty result would let the loop below pass without checking anything.
     Should Be True    ${search_result}[total] > 0
@@ -40,8 +41,9 @@ Search Finds Only Matching Products
         Should Contain    ${text.lower()}    phone
     END
 
-Paging Returns The Requested Slice
+[TC-208] Paging Returns The Requested Slice
     [Documentation]    limit=5, skip=10 must return exactly the products with ids 11..15.
+    [Tags]    TC-208
     # select=title keeps the response small; only the ids are checked.
     ${page}=    List Products Page    limit=5    skip=10    select=title
     Length Should Be    ${page}[products]    5
@@ -50,8 +52,9 @@ Paging Returns The Requested Slice
     ${expected}=    Evaluate    list(range(11, 16))
     Lists Should Be Equal    ${ids}    ${expected}
 
-Select Returns Only Requested Fields
+[TC-209] Select Returns Only Requested Fields
     [Documentation]    select=title,price trims every product to those fields (plus id).
+    [Tags]    TC-209
     ${page}=    List Products Page    limit=3    select=title,price
     FOR    ${product}    IN    @{page}[products]
         # Sorted keys, so the check does not depend on the field order in the JSON.
@@ -60,8 +63,9 @@ Select Returns Only Requested Fields
         Lists Should Be Equal    ${keys}    ${{['id', 'price', 'title']}}
     END
 
-Add Product Echoes The New Product
+[TC-210] Add Product Echoes The New Product
     [Documentation]    Adding a product answers 201 with the sent fields and a new id.
+    [Tags]    TC-210
     # ${19.99} is a number, not the text "19.99", so the JSON body sends a number.
     ${product}=    Add Product    title=Robot Test Product    price=${19.99}    category=testing
     # The response must echo what was sent and give the product an id.
@@ -69,8 +73,9 @@ Add Product Echoes The New Product
     Should Be Equal As Numbers    ${product}[price]    19.99
     Dictionary Should Contain Key    ${product}    id
 
-Update Product Changes Only The Sent Field
+[TC-211] Update Product Changes Only The Sent Field
     [Documentation]    A PUT with only a new price changes the price and keeps the other fields.
+    [Tags]    TC-211
     # Read the product first, to compare the unchanged fields afterwards.
     ${before}=    Get Product By Id    1
     ${after}=    Update Product    1    price=${12.5}
@@ -78,8 +83,9 @@ Update Product Changes Only The Sent Field
     # Fields that were not sent must stay as they were.
     Should Be Equal    ${after}[title]    ${before.json()}[title]
 
-Delete Product Marks It As Deleted
+[TC-212] Delete Product Marks It As Deleted
     [Documentation]    Deleting answers with the product marked as deleted, with a timestamp.
+    [Tags]    TC-212
     ${product}=    Delete Product    1
     # DummyJSON adds these two fields to the deleted product it sends back.
     Should Be True    ${product}[isDeleted]
