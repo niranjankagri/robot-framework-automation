@@ -10,10 +10,10 @@ Test Tags         api    carts
 
 
 *** Test Cases ***
-Cart Line Totals Add Up
+[TC-213] Cart Line Totals Add Up
     [Documentation]    Every line total is price x quantity, the cart total is the sum of
     ...                the lines, and totalProducts is the number of lines.
-    [Tags]    smoke
+    [Tags]    smoke    TC-213
     ${cart}=    Get Cart By Id    1
     # ${0} is the number 0 (not the text "0"), so it can be added to.
     VAR    ${sum_of_lines}    ${0}
@@ -28,8 +28,9 @@ Cart Line Totals Add Up
     Should Be Equal As Numbers    ${cart}[total]    ${sum_of_lines}    precision=2
     Should Be Equal As Integers    ${cart}[totalProducts]    ${{len($cart['products'])}}
 
-New Cart Contains The Added Products
+[TC-214] New Cart Contains The Added Products
     [Documentation]    A new cart with 2 pieces of one product has the right quantity and total.
+    [Tags]    TC-214
     # ${1}, ${144}, ${2} are numbers, so the JSON body sends numbers and not strings.
     ${cart}=    Create Cart With Product    user_id=${1}    product_id=${144}    quantity=${2}
     Should Be Equal As Integers    ${cart}[totalQuantity]    2
@@ -37,8 +38,9 @@ New Cart Contains The Added Products
     # Total = the product's own price x 2; the price is taken from the response.
     Should Be Equal As Numbers    ${cart}[total]    ${{round($cart['products'][0]['price'] * 2, 2)}}
 
-Carts Of A User Belong To That User
+[TC-215] Carts Of A User Belong To That User
     [Documentation]    /carts/user/1 returns only carts whose userId is 1.
+    [Tags]    TC-215
     ${carts}=    Get Carts Of User    1
     # A cart of another user in this list would be a data leak.
     FOR    ${cart}    IN    @{carts}

@@ -12,34 +12,35 @@ Test Tags         ui    login
 
 
 *** Test Cases ***
-Standard User Can Log In
+[TC-101] Standard User Can Log In
     [Documentation]    Valid credentials lead to the product list.
-    [Tags]    smoke
+    [Tags]    smoke    TC-101
     Submit Login Form    ${STANDARD_USER}    ${PASSWORD}
     # Landing on the product list is the proof that the login worked.
     Products Page Should Be Open
 
-User Can Log Out
+[TC-102] User Can Log Out
     [Documentation]    Logging out through the side menu returns to the login page.
-    [Tags]    smoke
+    [Tags]    smoke    TC-102
     # Log in first and make sure it worked, so a failure below is really about logging out.
     Submit Login Form    ${STANDARD_USER}    ${PASSWORD}
     Products Page Should Be Open
     Log Out Through Side Menu
     Login Page Should Be Open
 
-Logged Out User Cannot Open Products Page Directly
+[TC-103] Logged Out User Cannot Open Products Page Directly
     [Documentation]    Access control: typing the products URL without logging in must
     ...                send the user back to the login page with an error.
+    [Tags]    TC-103
     # Skip the login form and go straight to a page that needs a login.
     Open Products Page Directly
     # Sauce Demo redirects to the login page and names the page that was refused.
     Login Error Message Should Be    Epic sadface: You can only access '/inventory.html' when you are logged in.
 
-Invalid Logins Show The Right Error
+[TC-104] Invalid Logins Show The Right Error
     [Documentation]    Data-driven: every row is one failed login attempt with the error it
     ...                must show. All rows run, even when one of them fails.
-    [Tags]    negative
+    [Tags]    negative    TC-104
     # Each row below is one call of the template keyword with these arguments.
     [Template]    Login Should Fail With Error
     # username            password        expected error

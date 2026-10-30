@@ -9,9 +9,9 @@ Test Tags         api    auth
 
 
 *** Test Cases ***
-Valid Login Returns Tokens And User
+[TC-201] Valid Login Returns Tokens And User
     [Documentation]    A valid login returns an access token (a JWT), a refresh token and the user.
-    [Tags]    smoke
+    [Tags]    smoke    TC-201
     # Log in with the test user DummyJSON publishes in its docs.
     ${response}=    Send Login Request    ${API_USER}    ${API_PASSWORD}
     # Contract check: both tokens and the user's basic fields must be in the body.
@@ -22,26 +22,27 @@ Valid Login Returns Tokens And User
     # A JWT has three dot-separated parts: header.payload.signature
     Should Match Regexp    ${response.json()}[accessToken]    ^[\\w-]+\\.[\\w-]+\\.[\\w-]+$
 
-Token Gives Access To Current User
+[TC-202] Token Gives Access To Current User
     [Documentation]    The access token opens the protected /auth/me endpoint for that user.
+    [Tags]    TC-202
     # Step 1: log in and keep only the token.
     ${token}=    Get Access Token    ${API_USER}    ${API_PASSWORD}
     # Step 2: call the protected endpoint with it; it must say who the token belongs to.
     ${response}=    Get Current User With Token    ${token}
     Should Be Equal    ${response.json()}[username]    ${API_USER}
 
-Current User Needs A Token
+[TC-203] Current User Needs A Token
     [Documentation]    /auth/me without a token is refused with 401.
     ...                The keyword uses a fresh session: the login response also sets an
     ...                accessToken cookie, and the shared session would send it back.
-    [Tags]    negative
+    [Tags]    negative    TC-203
     # The keyword already fails on any status but 401; here the reason is checked too.
     ${response}=    Get Current User Without Token
     Should Be Equal    ${response.json()}[message]    Access Token is required
 
-Invalid Credentials Are Rejected
+[TC-204] Invalid Credentials Are Rejected
     [Documentation]    Data-driven: a wrong password or an unknown user gets 400 and no token.
-    [Tags]    negative
+    [Tags]    negative    TC-204
     # Each row below is one call of the template keyword with these arguments.
     [Template]    Login Should Be Rejected With 400
     # username         password

@@ -9,21 +9,23 @@ Test Tags         ui    products
 
 
 *** Test Cases ***
-Products Page Lists Six Products
+[TC-105] Products Page Lists Six Products
     [Documentation]    The shop offers six products; a missing or extra card is a bug.
-    [Tags]    smoke
+    [Tags]    smoke    TC-105
     @{names}=    Get Displayed Product Names
     Length Should Be    ${names}    6
 
-Default Sort Is Name A To Z
+[TC-106] Default Sort Is Name A To Z
     [Documentation]    Without choosing a sort option, products are listed by name A to Z.
+    [Tags]    TC-106
     # No Sort Products By here: this checks the order the page opens with.
     @{names}=    Get Displayed Product Names
     Values Should Be Sorted    ${names}    ascending
 
-Products Can Be Sorted
+[TC-107] Products Can Be Sorted
     [Documentation]    Data-driven: each row picks a sort option and checks that the names or
     ...                prices shown are in the expected order.
+    [Tags]    TC-107
     # Each row below is one call of the template keyword with these arguments.
     [Template]    Selected Sort Option Should Order Products
     # sort option            sorted by    expected order

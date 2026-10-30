@@ -80,7 +80,7 @@ Same argument files, one process. Handy when debugging a single test with the br
 ```bash
 robot --outputdir results -A args/common.args tests                       # everything
 robot --outputdir results -A args/common.args tests/ui/03_cart.robot      # one suite
-robot --outputdir results -A args/common.args --test "User Can Buy Two Products" tests
+robot --outputdir results -A args/common.args --include TC-112 tests            # one test case by its ID
 robot --outputdir results -A args/common.args --include api tests         # by tag
 ```
 
@@ -220,6 +220,10 @@ BROWSER=edge pabot --processes 2 --outputdir results -A args/common.args tests/u
 | `API_URL` | `https://dummyjson.com` | API under test |
 | `API_USER` / `API_PASSWORD` | `emilys` / `emilyspass` | DummyJSON demo user |
 | `SAUCE_PASSWORD` | `secret_sauce` | Sauce Demo demo password (public, printed on its login page) |
+
+## Test case IDs
+
+Every test starts with its case ID and carries it as a tag (`[TC-112] User Can Buy Two Products`, tag `TC-112`). The 30 cases (UI TC-101 to TC-115, API TC-201 to TC-215) are written out for a manual run in [docs/manual-test-cases.md](docs/manual-test-cases.md). Select one with `--include TC-112`: `--test` takes a glob pattern, in which `[...]` means a character class.
 
 ## Tags
 
