@@ -7,4 +7,4 @@ robotframework-requests==0.9.7
 robotframework-pabot==5.2.2
 
 # Linter for .robot/.resource files (config in pyproject.toml).
-robotframework-robocop==9.1.0
+robotframework-robocop==9.1.2
