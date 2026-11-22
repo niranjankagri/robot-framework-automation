@@ -9,11 +9,11 @@ Test Tags         ui    products
 
 
 *** Test Cases ***
-[TC-105] Products Page Lists Six Products
-    [Documentation]    The shop offers six products; a missing or extra card is a bug.
+[TC-105] Products Page Lists Four Products
+    [Documentation]    The shop offers four products; a missing or extra card is a bug.
     [Tags]    smoke    TC-105
     @{names}=    Get Displayed Product Names
-    Length Should Be    ${names}    6
+    Length Should Be    ${names}    4
 
 [TC-106] Default Sort Is Name A To Z
     [Documentation]    Without choosing a sort option, products are listed by name A to Z.

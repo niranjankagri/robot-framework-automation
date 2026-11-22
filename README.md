@@ -7,7 +7,7 @@ built on the Page Object Model and run in parallel with **pabot**.
 
 | Layer | Application under test | Library |
 |---|---|---|
-| UI | [Sauce Demo](https://www.saucedemo.com): login, product list, cart, checkout | SeleniumLibrary 6.9 |
+| UI | [Pattern Shop](https://github.com/niranjankagri/pattern-shop-demo-app) (my own demo shop, run from its Docker image): login, product list, cart, checkout | SeleniumLibrary 6.9 |
 | API | [DummyJSON](https://dummyjson.com): auth, products, carts | RequestsLibrary 0.9 |
 
 **30 tests** (15 UI + 15 API) · full run in about **70 s** with 4 pabot processes · Robocop lint clean.
@@ -33,8 +33,17 @@ More background on the design decisions: [docs/framework-design.md](docs/framewo
 
 ## Setup
 
-Needs Python 3.10+ and Chrome (Firefox and Edge work too). SeleniumLibrary uses Selenium Manager,
-so no driver download is needed.
+Needs Python 3.10+, Chrome (Firefox and Edge work too) and Docker for the shop. SeleniumLibrary uses
+Selenium Manager, so no driver download is needed.
+
+The UI tests need Pattern Shop on `http://localhost:8080`:
+
+```bash
+docker run -d -p 8080:8080 ghcr.io/niranjankagri/pattern-shop-demo-app:latest
+```
+
+Without Docker, point the tests at the hosted demo: `UI_URL=https://pattern-shop.onrender.com` (it sleeps when idle,
+so the first page can take about a minute).
 
 ```bash
 python -m venv .venv
@@ -115,7 +124,7 @@ so the log reads like the user journey.
 
 **A failure**: SeleniumLibrary takes a screenshot when a keyword fails (`run_on_failure` in
 `common.resource`) and embeds it in the log at the failing step. This run was forced to fail by
-logging in as the locked-out user (`--variable STANDARD_USER:locked_out_user`).
+logging in as the locked user (`--variable STANDARD_USER:locked_user`).
 
 ![Robot Framework log: a failed setup with the screenshot taken at the failing step](docs/images/log-failure-screenshot.png)
 
@@ -131,7 +140,7 @@ libraries/ShopLibrary.py      custom Python keywords (price parsing, sort check,
 resources/
   common.resource             browser open/close and options, shared UI helpers
   components/
-    HeaderComponent.resource  header on every logged-in page: menu, logout, cart icon + badge
+    HeaderComponent.resource  header on every logged-in page: sign-out, cart link + counter
   pages/                      one page object per screen
     LoginPage.resource
     InventoryPage.resource
@@ -216,10 +225,10 @@ BROWSER=edge pabot --processes 2 --outputdir results -A args/common.args tests/u
 | `BROWSER` | `chrome` | `chrome`, `firefox` or `edge` |
 | `HEADLESS` | `False` | run without a browser window |
 | `TIMEOUT` | `10 s` | maximum wait for any element or condition |
-| `UI_URL` | `https://www.saucedemo.com` | shop under test |
+| `UI_URL` | `http://localhost:8080` | shop under test (Pattern Shop) |
 | `API_URL` | `https://dummyjson.com` | API under test |
 | `API_USER` / `API_PASSWORD` | `emilys` / `emilyspass` | DummyJSON demo user |
-| `SAUCE_PASSWORD` | `secret_sauce` | Sauce Demo demo password (public, printed on its login page) |
+| `SHOP_PASSWORD` | `secret_sauce` | Pattern Shop demo password (public, in its README) |
 
 ## Test case IDs
 
@@ -263,7 +272,8 @@ something is done where the code alone does not say it.
 
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every push and pull request to `main`,
 by hand (Actions tab → *Run workflow*) and every night at 03:00 UTC. The nightly run matters because
-both applications under test are public sites that can change without a commit here.
+the API under test (DummyJSON) is a public site that can change without a commit here. Each test job first
+starts Pattern Shop from `ghcr.io/niranjankagri/pattern-shop-demo-app:latest` and waits for its `/health`.
 
 ```
 lint  ──►  tests (matrix: chrome, firefox; run in parallel)

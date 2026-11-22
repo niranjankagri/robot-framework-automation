@@ -12,9 +12,9 @@ Test Tags         ui    cart
 
 *** Variables ***
 # Product names as the shop shows them; the page objects build the button locators from them.
-${BACKPACK}       Sauce Labs Backpack
-${BIKE_LIGHT}     Sauce Labs Bike Light
-${ONESIE}         Sauce Labs Onesie
+${BACKPACK}       Backpack
+${BIKE_LIGHT}     Bike Light
+${T_SHIRT}        Bolt T-Shirt
 
 
 *** Test Cases ***
@@ -29,16 +29,19 @@ ${ONESIE}         Sauce Labs Onesie
     Cart Should Contain Only    ${BACKPACK}    ${BIKE_LIGHT}
 
 [TC-109] Removing A Product Updates The Badge
-    [Documentation]    Each removal lowers the badge count; removing the last product hides it.
+    [Documentation]    Each removal in the cart lowers the counter; after the last one the
+    ...                cart is empty and the counter shows 0.
     [Tags]    TC-109
     Add Product To Cart    ${BACKPACK}
-    Add Product To Cart    ${ONESIE}
+    Add Product To Cart    ${T_SHIRT}
+    Open Cart Through Header Icon
     # 2 -> 1: the count goes down by one.
     Remove Product From Cart    ${BACKPACK}
     Cart Badge Count Should Be    1
-    # 1 -> 0: the badge disappears instead of showing 0.
-    Remove Product From Cart    ${ONESIE}
+    # 1 -> 0: nothing left in the cart.
+    Remove Product From Cart    ${T_SHIRT}
     Cart Badge Count Should Be    0
+    Cart Should Be Empty
 
 [TC-110] Cart Is Empty For A New Session
     [Documentation]    A user who just logged in starts with an empty cart.

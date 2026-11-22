@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation     Page object for the Sauce Demo login page (the start page).
+Documentation     Page object for the Pattern Shop sign-in page (the start page).
 ...
 ...               Tests talk to the page only through these keywords; the locators stay here,
 ...               so a UI change means one edit in this file, not in every test.
@@ -9,27 +9,27 @@ Resource          InventoryPage.resource
 
 
 *** Variables ***
-# data-test attributes are made for automation, so they are the most stable locators.
-${USERNAME_INPUT}         css:[data-test="username"]
-${PASSWORD_INPUT}         css:[data-test="password"]
-${LOGIN_BUTTON}           css:[data-test="login-button"]
-${LOGIN_ERROR_MESSAGE}    css:[data-test="error"]
+# data-testid attributes are made for automation, so they are the most stable locators.
+${USERNAME_INPUT}         css:[data-testid="username"]
+${PASSWORD_INPUT}         css:[data-testid="password"]
+${LOGIN_BUTTON}           css:[data-testid="login-button"]
+${LOGIN_ERROR_MESSAGE}    css:[data-testid="login-error"]
 
 
 *** Keywords ***
 Open Login Page
     [Documentation]    Loads the login page again in the browser that is already open.
     ...                The data-driven login tests run several attempts in one browser.
-    Go To    ${UI_URL}
+    Go To    ${UI_URL}/login
 
 Login Page Should Be Open
     [Documentation]    Waits for the login form and checks the page title.
     Wait Until Element Is Visible    ${LOGIN_BUTTON}
-    # "Swag Labs" is the browser tab title of the Sauce Demo pages.
-    Title Should Be    Swag Labs
+    # Browser tab title of the shop's sign-in page.
+    Title Should Be    Login | Pattern Shop
 
 Submit Login Form
-    [Documentation]    Types ${username} and ${password} and clicks "Login".
+    [Documentation]    Types ${username} and ${password} and clicks "Sign in".
     ...
     ...                Does not check the result on purpose: positive tests follow it with
     ...                ``Products Page Should Be Open``, negative tests with

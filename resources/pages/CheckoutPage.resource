@@ -2,44 +2,48 @@
 Documentation     Page objects for the three checkout steps:
 ...               1. your information (form), 2. overview (prices), 3. complete (confirmation).
 ...
-...               The three steps are one flow with shared buttons (Continue, Cancel),
+...               The three steps are one flow with shared controls (Continue, Cancel),
 ...               so they share one resource file instead of three tiny ones.
 Resource          ../common.resource
+Resource          ../components/HeaderComponent.resource
 # ShopLibrary: Generate Random Customer, Parse Prices and Calculate Order Totals.
 Library           ../../libraries/ShopLibrary.py
 
 
 *** Variables ***
-${INFORMATION_PATH}          /checkout-step-one.html
-${COMPLETE_PATH}             /checkout-complete.html
+${INFORMATION_PATH}          /checkout/info
+${COMPLETE_PATH}             /complete
 
 # Step 1: customer information form.
 # Robot variable names ignore case and underscores, so ${FIRST_NAME} would clash
 # with a keyword argument ${first_name}. Hence the _INPUT suffix on the locators.
-${FIRST_NAME_INPUT}          css:[data-test="firstName"]
-${LAST_NAME_INPUT}           css:[data-test="lastName"]
-${POSTAL_CODE_INPUT}         css:[data-test="postalCode"]
-${CONTINUE_BUTTON}           css:[data-test="continue"]
-${CANCEL_BUTTON}             css:[data-test="cancel"]
-${CHECKOUT_ERROR_MESSAGE}    css:[data-test="error"]
+${FIRST_NAME_INPUT}          css:[data-testid="first-name"]
+${LAST_NAME_INPUT}           css:[data-testid="last-name"]
+${POSTAL_CODE_INPUT}         css:[data-testid="postal-code"]
+${CONTINUE_BUTTON}           css:[data-testid="continue"]
+# "Cancel" is a link on both steps (back to the cart on step 1, to the products on step 2).
+${CANCEL_LINK}               css:[data-testid="cancel"]
+${CHECKOUT_ERROR_MESSAGE}    css:[data-testid="checkout-error"]
 
-# Step 2: overview with item prices and totals.
-${ITEM_PRICE_LABELS}         css:[data-test="inventory-item-price"]
-${SUBTOTAL_LABEL}            css:[data-test="subtotal-label"]
-${TAX_LABEL}                 css:[data-test="tax-label"]
-${TOTAL_LABEL}               css:[data-test="total-label"]
-${FINISH_BUTTON}             css:[data-test="finish"]
+# Step 2: overview with item prices and totals (each amount is its own element, e.g. "$29.99").
+${ITEM_PRICE_LABELS}         css:[data-testid="overview-item-price"]
+${SUBTOTAL_LABEL}            css:[data-testid="subtotal"]
+${TAX_LABEL}                 css:[data-testid="tax"]
+${TOTAL_LABEL}               css:[data-testid="total"]
+${FINISH_BUTTON}             css:[data-testid="finish"]
 
 # Step 3: order confirmation.
-${CONFIRMATION_HEADER}       css:[data-test="complete-header"]
-${BACK_TO_PRODUCTS_BUTTON}   css:[data-test="back-to-products"]
+${CONFIRMATION_HEADER}       css:[data-testid="complete-title"]
+${ORDER_NUMBER_LABEL}        css:[data-testid="order-number"]
+${BACK_TO_PRODUCTS_LINK}     css:[data-testid="back-to-products"]
 
 
 *** Keywords ***
 Open Checkout Information Page Directly
-    [Documentation]    Opens step 1 by URL. The form works even with an empty cart,
-    ...                which lets the form-validation tests skip the cart steps.
+    [Documentation]    Opens step 1 by URL. Pattern Shop shows the form only when the cart has
+    ...                a product (an empty cart goes back to /cart), so add one first.
     Go To    ${UI_URL}${INFORMATION_PATH}
+    Wait Until Element Is Visible    ${FIRST_NAME_INPUT}
 
 Submit Customer Information
     [Documentation]    Step 1: fills in the three fields and clicks "Continue".
@@ -75,27 +79,30 @@ Overview Totals Should Match Item Prices Plus Tax
     ${price_texts}=    Get Texts Of All Matching Elements    ${ITEM_PRICE_LABELS}
     ${item_prices}=    Parse Prices    ${price_texts}
     ${subtotal}    ${tax}    ${total}=    Calculate Order Totals    ${item_prices}
-    # "$$" is "$" followed by a variable: "Item total: $" + "29.99".
-    Element Text Should Be    ${SUBTOTAL_LABEL}    Item total: $${subtotal}
-    Element Text Should Be    ${TAX_LABEL}         Tax: $${tax}
-    Element Text Should Be    ${TOTAL_LABEL}       Total: $${total}
+    # "$$" is "$" followed by a variable: "$" + "29.99".
+    Element Text Should Be    ${SUBTOTAL_LABEL}    $${subtotal}
+    Element Text Should Be    ${TAX_LABEL}         $${tax}
+    Element Text Should Be    ${TOTAL_LABEL}       $${total}
 
 Place Order
     [Documentation]    Step 2: clicks "Finish" to place the order.
     Click Button    ${FINISH_BUTTON}
 
 Order Confirmation Should Be Shown
-    [Documentation]    Step 3: checks the "Thank you for your order!" page.
+    [Documentation]    Step 3: checks the "Thank you for your order" page and its order number.
     Wait Until Element Is Visible    ${CONFIRMATION_HEADER}
-    Element Text Should Be    ${CONFIRMATION_HEADER}    Thank you for your order!
+    Element Text Should Be    ${CONFIRMATION_HEADER}    Thank you for your order
+    # An order number such as ORD-4821.
+    ${order}=    Get Text    ${ORDER_NUMBER_LABEL}
+    Should Match Regexp    ${order}    ^ORD-\\d{4}$
     # The URL proves it is the real confirmation step, not a message on another page.
     Location Should Contain    ${COMPLETE_PATH}
 
 Return To Products After Order
-    [Documentation]    Step 3: clicks "Back Home" to return to the product list.
-    Click Button    ${BACK_TO_PRODUCTS_BUTTON}
+    [Documentation]    Step 3: clicks "Back to products" to return to the product list.
+    Click Link    ${BACK_TO_PRODUCTS_LINK}
 
 Cancel Checkout
-    [Documentation]    Clicks "Cancel" on step 1 or 2. Sauce Demo goes back to the product
-    ...                list and keeps the cart.
-    Click Button    ${CANCEL_BUTTON}
+    [Documentation]    Clicks "Cancel" on step 2: the shop goes back to the product list and
+    ...                keeps the cart (no order is placed).
+    Click Link    ${CANCEL_LINK}

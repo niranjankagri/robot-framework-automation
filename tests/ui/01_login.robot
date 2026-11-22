@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation     Login and logout on Sauce Demo, access control, and the login error messages.
+Documentation     Login and logout on Pattern Shop, access control, and the login error messages.
 Resource          ../../resources/pages/LoginPage.resource
 Resource          ../../resources/pages/InventoryPage.resource
 Resource          ../../resources/components/HeaderComponent.resource
@@ -20,12 +20,12 @@ Test Tags         ui    login
     Products Page Should Be Open
 
 [TC-102] User Can Log Out
-    [Documentation]    Logging out through the side menu returns to the login page.
+    [Documentation]    Signing out with the header button returns to the login page.
     [Tags]    smoke    TC-102
     # Log in first and make sure it worked, so a failure below is really about logging out.
     Submit Login Form    ${STANDARD_USER}    ${PASSWORD}
     Products Page Should Be Open
-    Log Out Through Side Menu
+    Log Out Through Header
     Login Page Should Be Open
 
 [TC-103] Logged Out User Cannot Open Products Page Directly
@@ -34,8 +34,8 @@ Test Tags         ui    login
     [Tags]    TC-103
     # Skip the login form and go straight to a page that needs a login.
     Open Products Page Directly
-    # Sauce Demo redirects to the login page and names the page that was refused.
-    Login Error Message Should Be    Epic sadface: You can only access '/inventory.html' when you are logged in.
+    # The shop redirects to the login page and asks the visitor to sign in.
+    Login Error Message Should Be    Please sign in to see that page.
 
 [TC-104] Invalid Logins Show The Right Error
     [Documentation]    Data-driven: every row is one failed login attempt with the error it
@@ -44,11 +44,11 @@ Test Tags         ui    login
     # Each row below is one call of the template keyword with these arguments.
     [Template]    Login Should Fail With Error
     # username            password        expected error
-    ${EMPTY}              ${EMPTY}        Epic sadface: Username is required
-    ${STANDARD_USER}      ${EMPTY}        Epic sadface: Password is required
-    ${STANDARD_USER}      wrong_pass      Epic sadface: Username and password do not match any user in this service
-    unknown_user          ${PASSWORD}     Epic sadface: Username and password do not match any user in this service
-    ${LOCKED_USER}        ${PASSWORD}     Epic sadface: Sorry, this user has been locked out.
+    ${EMPTY}              ${EMPTY}        User name and password are required.
+    ${STANDARD_USER}      ${EMPTY}        User name and password are required.
+    ${STANDARD_USER}      wrong_pass      User name and password do not match any user.
+    unknown_user          ${PASSWORD}     User name and password do not match any user.
+    ${LOCKED_USER}        ${PASSWORD}     This user has been locked out.
 
 
 *** Keywords ***
