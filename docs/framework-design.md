@@ -12,7 +12,7 @@ Why the framework is built the way it is. The README says *how* to use it; this 
 | Shared helpers | `common.resource`, `ApiSession.resource`, `ShopLibrary.py` | browser and session setup, generic helpers | any specific screen or endpoint |
 | Configuration | `variables/config.py`, `args/*.args` | environment, browser, run profiles | anything about the tests themselves |
 
-The point of the split: when Sauce Demo renames a `data-test` attribute, or DummyJSON moves an
+The point of the split: when the shop renames a `data-testid` attribute, or DummyJSON moves an
 endpoint, the fix is one line in one resource file and no test changes.
 
 ## 2. Page Object Model in Robot Framework
@@ -26,11 +26,11 @@ Robot Framework has no classes, so a "page object" is a **resource file per scre
   Click-style navigation keywords (`Open Cart Through Header Icon`, `Proceed To Checkout`) do not call it; the next keyword
   that needs the page does (`Cart Should Contain Only` starts with `Cart Page Should Be Open`).
 
-**Components.** The header (burger menu, cart icon, badge) is on every logged-in page but has no URL.
+**Components.** The header (sign-out button, cart link with its counter) is on every logged-in page but has no URL.
 Keeping it in `InventoryPage` meant cart and checkout tests imported the product-list page just for
 the header. It is now `HeaderComponent.resource`, imported by the pages and tests that need it.
 
-**Checkout is one file, three steps.** The three checkout screens share buttons (Continue, Cancel)
+**Checkout is one file, three steps.** The three checkout screens share controls (Continue, Cancel)
 and are only ever used in order, so one resource keeps the flow readable. If a step grew larger,
 it would be split into its own page object.
 
@@ -38,9 +38,15 @@ it would be split into its own page object.
 the outcome; check keywords contain `Should`. That lets the negative, data-driven tests reuse the
 same actions with bad data and then check the error.
 
-**Locators.** `data-test` attributes first (made for automation, survive styling changes), `id` where
-there is no `data-test` (the burger menu), never XPath on layout. Product buttons are built from the
-product name (`Product Id From Name` in `ShopLibrary.py`), so one keyword serves all six products.
+**Locators.** `data-testid` attributes first (made for automation, survive styling changes), never XPath on
+layout. The add-to-cart and remove buttons are found from the product's visible name (an XPath anchored on the
+`data-testid` of the card and of its name: `//li[@data-testid="product-card"][a[... normalize-space()="Backpack"]]//button`),
+so one keyword serves every product and a test names products the way a user sees them.
+
+**The shop.** Until Nov 2026 the UI tests ran against the public Sauce Demo site. They now run against
+[Pattern Shop](https://github.com/niranjankagri/pattern-shop-demo-app), my own demo shop, started from its Docker
+image in every CI job: no shared public site that can be slow or down, and the same flows (login, sorting, cart,
+two-step checkout with 8 % tax).
 
 ## 3. Service objects for the API
 
@@ -63,7 +69,7 @@ That only works if tests are independent, which the framework guarantees by desi
 
 - every UI test opens its own browser in `Test Setup` and closes it in `Test Teardown`;
 - every API suite opens its own HTTP session; nothing is shared between processes;
-- Sauce Demo keeps the cart per browser session, so parallel browsers cannot see each other's cart;
+- Pattern Shop keeps the cart per browser session (cookie), so parallel browsers cannot see each other's cart;
 - DummyJSON does not store writes, so parallel add/update/delete calls cannot interfere.
 
 Because of that, `--testlevelsplit` (one test per work item) is safe and balances better than the

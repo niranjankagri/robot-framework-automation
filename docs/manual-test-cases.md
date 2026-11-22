@@ -8,12 +8,13 @@ with several data sets.
 
 | ID range | Area | Automated in |
 |---|---|---|
-| TC-101 to TC-115 | Sauce Demo shop in the browser | `tests/ui/*.robot` (SeleniumLibrary) |
+| TC-101 to TC-115 | Pattern Shop in the browser | `tests/ui/*.robot` (SeleniumLibrary) |
 | TC-201 to TC-215 | DummyJSON REST API | `tests/api/*.robot` (RequestsLibrary) |
 
 ## Setup
 
-- Shop: <https://www.saucedemo.com>, password `secret_sauce`; users `standard_user`, `locked_out_user`.
+- Shop: Pattern Shop at <http://localhost:8080> (`docker run -d -p 8080:8080 ghcr.io/niranjankagri/pattern-shop-demo-app`)
+  or the hosted demo <https://pattern-shop.onrender.com>; password `secret_sauce`; users `standard_user`, `locked_user`.
   Every UI case starts logged in as `standard_user` on the products page, except the login cases.
 - API: <https://dummyjson.com>, user `emilys` / `emilyspass`. DummyJSON fakes writes: add, update
   and delete answer as if they worked, but nothing is stored.
@@ -27,11 +28,11 @@ with several data sets.
 | TC-102 | User can log out | UI / Smoke | High |
 | TC-103 | Logged-out user cannot open the products page directly | UI / Security | High |
 | TC-104 | Invalid logins show the right error (5 data sets) | UI / Negative | High |
-| TC-105 | Products page lists six products | UI / Smoke | High |
+| TC-105 | Products page lists four products | UI / Smoke | High |
 | TC-106 | Default sort is name A to Z | UI | Low |
 | TC-107 | Products can be sorted (4 data sets) | UI | Medium |
 | TC-108 | Added products appear in the cart | UI / Smoke | High |
-| TC-109 | Removing a product updates the badge | UI | Medium |
+| TC-109 | Removing a product updates the cart counter | UI | Medium |
 | TC-110 | The cart is empty for a new session | UI | Medium |
 | TC-111 | The cart keeps products after Continue Shopping | UI | Medium |
 | TC-112 | User can buy two products (end to end) | UI / Smoke / E2E | High |
@@ -68,33 +69,33 @@ with several data sets.
 
 | # | Step | Expected result |
 |---|---|---|
-| 1 | Log in; open the side menu (☰), click **Logout** | The login page |
+| 1 | Log in; click **Sign out** in the header | The login page |
 
 ### TC-103 Logged-out user cannot open the products page directly
 
 | # | Step | Expected result |
 |---|---|---|
-| 1 | Logged out, open `https://www.saucedemo.com/inventory.html` | Login page with "Epic sadface: You can only access '/inventory.html' when you are logged in." |
+| 1 | Logged out, open `/products` | Login page with "Please sign in to see that page." |
 
 ### TC-104 Invalid logins show the right error
 
-For every data set: enter the user and password, click **Login**; expected the error shown.
+For every data set: enter the user and password, click **Sign in**; expected the error shown.
 
 | Data set | User | Password | Error |
 |---|---|---|---|
-| 1 | (empty) | (empty) | Epic sadface: Username is required |
-| 2 | `standard_user` | (empty) | Epic sadface: Password is required |
-| 3 | `standard_user` | `wrong_pass` | Epic sadface: Username and password do not match any user in this service |
-| 4 | `unknown_user` | `secret_sauce` | Epic sadface: Username and password do not match any user in this service |
-| 5 | `locked_out_user` | `secret_sauce` | Epic sadface: Sorry, this user has been locked out. |
+| 1 | (empty) | (empty) | User name and password are required. |
+| 2 | `standard_user` | (empty) | User name and password are required. |
+| 3 | `standard_user` | `wrong_pass` | User name and password do not match any user. |
+| 4 | `unknown_user` | `secret_sauce` | User name and password do not match any user. |
+| 5 | `locked_user` | `secret_sauce` | This user has been locked out. |
 
 ## UI: products (`tests/ui/02_products.robot`)
 
-### TC-105 Products page lists six products
+### TC-105 Products page lists four products
 
 | # | Step | Expected result |
 |---|---|---|
-| 1 | Count the product cards | Exactly 6 |
+| 1 | Count the product cards | Exactly 4 |
 
 ### TC-106 Default sort is name A to Z
 
@@ -104,7 +105,7 @@ For every data set: enter the user and password, click **Login**; expected the e
 
 ### TC-107 Products can be sorted
 
-For every data set: choose the option in the sort list; expected order shown.
+For every data set: choose the option in the sort list and click **Sort**; expected order shown.
 
 | Data set | Option | Expected |
 |---|---|---|
@@ -119,15 +120,15 @@ For every data set: choose the option in the sort list; expected order shown.
 
 | # | Step | Expected result |
 |---|---|---|
-| 1 | **Add to cart** on Sauce Labs Backpack and Sauce Labs Bike Light | Cart badge `2` |
-| 2 | Open the cart (header icon) | Exactly those two products |
+| 1 | **Add to cart** on Backpack and Bike Light | Cart counter `2` |
+| 2 | Open the cart (header link) | Exactly those two products |
 
-### TC-109 Removing a product updates the badge
+### TC-109 Removing a product updates the cart counter
 
 | # | Step | Expected result |
 |---|---|---|
-| 1 | Add Sauce Labs Backpack and Sauce Labs Onesie; **Remove** the Backpack | Badge `1` |
-| 2 | **Remove** the Onesie | Badge gone |
+| 1 | Add Backpack and Bolt T-Shirt, open the cart, **Remove** the Backpack | Counter `1` |
+| 2 | **Remove** the Bolt T-Shirt | Counter `0`; the cart is empty |
 
 ### TC-110 The cart is empty for a new session
 
@@ -139,7 +140,7 @@ For every data set: choose the option in the sort list; expected order shown.
 
 | # | Step | Expected result |
 |---|---|---|
-| 1 | Add the Backpack, open the cart, click **Continue Shopping** | Products page; badge `1` |
+| 1 | Add the Backpack, open the cart, click **Continue shopping** | Products page; counter `1` |
 
 ## UI: checkout (`tests/ui/04_checkout.robot`)
 
@@ -147,23 +148,23 @@ For every data set: choose the option in the sort list; expected order shown.
 
 | # | Step | Expected result |
 |---|---|---|
-| 1 | Add Sauce Labs Backpack and Sauce Labs Fleece Jacket, open the cart | Exactly those two |
+| 1 | Add Backpack and Fleece Jacket, open the cart | Exactly those two |
 | 2 | **Checkout**, enter any first name, last name and postal code, **Continue** | Overview |
 | 3 | Check the totals | Item total = sum of the prices; tax = 8 % rounded to cents; total = item total + tax |
-| 4 | **Finish** | Order confirmation; badge gone |
-| 5 | **Back Home** | Products page |
+| 4 | **Finish** | "Thank you for your order" with an order number (ORD- and four digits); counter `0` |
+| 5 | **Back to products** | Products page |
 
 ### TC-113 Order totals include eight percent tax
 
 | # | Step | Expected result |
 |---|---|---|
-| 1 | Add Bike Light, Bolt T-Shirt and Onesie (three different prices), go to the overview | Item total = sum; tax = 8 % rounded to cents; total = item total + tax |
+| 1 | Add Bike Light, Bolt T-Shirt and Fleece Jacket (three different prices), go to the overview | Item total = sum; tax = 8 % rounded to cents; total = item total + tax |
 
 ### TC-114 Cancel on the overview keeps the cart
 
 | # | Step | Expected result |
 |---|---|---|
-| 1 | Add the Backpack, go to the overview, click **Cancel** | Products page; badge `1`; no order placed |
+| 1 | Add the Backpack, go to the overview, click **Cancel** | Products page; counter `1`; no order placed |
 
 ### TC-115 Customer information is required
 
@@ -172,9 +173,9 @@ the error and no overview.
 
 | Data set | First name | Last name | Postal code | Error |
 |---|---|---|---|---|
-| 1 | (empty) | `Doe` | `12345` | Error: First Name is required |
-| 2 | `Jane` | (empty) | `12345` | Error: Last Name is required |
-| 3 | `Jane` | `Doe` | (empty) | Error: Postal Code is required |
+| 1 | (empty) | `Doe` | `12345` | First name is required. |
+| 2 | `Jane` | (empty) | `12345` | Last name is required. |
+| 3 | `Jane` | `Doe` | (empty) | Postal code is required. |
 
 ---
 

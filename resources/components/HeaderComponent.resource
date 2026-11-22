@@ -1,6 +1,7 @@
 *** Settings ***
 Documentation     Component object for the header shared by every logged-in page
-...               (products, cart, checkout): side menu, cart icon and cart badge.
+...               (products, product, cart, checkout): who is signed in, the cart link
+...               with its counter, and the "Sign out" button.
 ...
 ...               It is a component, not a page: it has no URL of its own, so it is kept
 ...               apart from the page objects and any page or test can use it.
@@ -8,47 +9,32 @@ Resource          ../common.resource
 
 
 *** Variables ***
-# Side menu ("burger" menu). It has no data-test attributes, so the stable ids are used.
-${SIDE_MENU_BUTTON}       id:react-burger-menu-btn
-${LOGOUT_MENU_LINK}       id:logout_sidebar_link
-${RESET_MENU_LINK}        id:reset_sidebar_link
-
-# Cart icon in the top right corner and the red number on it.
-${CART_ICON_LINK}         css:[data-test="shopping-cart-link"]
-${CART_BADGE}             css:[data-test="shopping-cart-badge"]
+# Pattern Shop gives every element a test needs a data-testid.
+${LOGOUT_BUTTON}          css:[data-testid="logout"]
+# "Cart (2)": the link, and the number inside it.
+${CART_LINK}              css:[data-testid="cart-link"]
+${CART_COUNT}             css:[data-testid="cart-count"]
 
 
 *** Keywords ***
-Log Out Through Side Menu
-    [Documentation]    Logs the user out with the "Logout" link of the side menu.
-    ...                Sauce Demo then shows the login page again.
-    Click Link In Side Menu    ${LOGOUT_MENU_LINK}
+Log Out Through Header
+    [Documentation]    Logs the user out with the "Sign out" button in the header.
+    ...                The shop then shows the sign-in page again.
+    Click Button    ${LOGOUT_BUTTON}
 
-Reset App State Through Side Menu
-    [Documentation]    Empties the cart with the "Reset App State" link of the side menu.
-    Click Link In Side Menu    ${RESET_MENU_LINK}
-
-Click Link In Side Menu
-    [Documentation]    Opens the side menu and clicks the link given as ${link} (a locator).
-    [Arguments]    ${link}
-    Click Button    ${SIDE_MENU_BUTTON}
-    # The menu slides in; wait until the link is really visible before clicking.
-    Wait Until Element Is Visible    ${link}
-    Click Link    ${link}
+Get Cart Count
+    [Documentation]    Returns the number in the cart link as an integer.
+    Wait Until Element Is Visible    ${CART_COUNT}
+    ${text}=    Get Text    ${CART_COUNT}
+    RETURN    ${text.strip()}
 
 Cart Badge Count Should Be
-    [Documentation]    Checks the number on the cart icon.
-    ...                A ${count} of 0 means the badge must not be shown at all,
-    ...                because Sauce Demo hides it when the cart is empty.
+    [Documentation]    Checks the number in the cart link, e.g. "2".
+    ...                Pattern Shop always shows it, also "0" for an empty cart.
     [Arguments]    ${count}
-    IF    ${count} == 0
-        # Checks the page as it is now, without waiting: an empty cart has no badge at all.
-        Page Should Not Contain Element    ${CART_BADGE}
-    ELSE
-        # Compares the badge text with the expected count, e.g. "2".
-        Element Text Should Be    ${CART_BADGE}    ${count}
-    END
+    Wait Until Element Is Visible    ${CART_COUNT}
+    Element Text Should Be    ${CART_COUNT}    ${count}
 
 Open Cart Through Header Icon
-    [Documentation]    Opens the cart page by clicking the cart icon in the header.
-    Click Link    ${CART_ICON_LINK}
+    [Documentation]    Opens the cart page with the cart link in the header.
+    Click Link    ${CART_LINK}

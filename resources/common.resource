@@ -13,13 +13,13 @@ Library           SeleniumLibrary    timeout=${TIMEOUT}    run_on_failure=Captur
 
 *** Keywords ***
 Open Browser On Login Page
-    [Documentation]    Starts a new browser on the Sauce Demo login page.
+    [Documentation]    Starts a new browser on the Pattern Shop sign-in page.
     ...
     ...                Browser, headless mode and window size come from variables/config.py,
     ...                so the same test runs on Chrome, Firefox or Edge without changes.
     ${options}=    Build Options For Selected Browser
     # Selenium Manager finds or downloads the matching driver, so no driver path is needed.
-    Open Browser    ${UI_URL}    ${BROWSER}    options=${options}
+    Open Browser    ${UI_URL}/login    ${BROWSER}    options=${options}
     # A fixed window size keeps the page layout (and screenshots) the same on every machine.
     Set Window Size    ${WINDOW_WIDTH}    ${WINDOW_HEIGHT}
     # No implicit wait: every keyword waits explicitly for what it needs,

@@ -17,8 +17,8 @@ from decimal import Decimal, ROUND_HALF_UP
 from robot.api import logger
 from robot.api.deco import keyword, library
 
-# Sauce Demo charges 8% tax on the item total.
-SAUCE_DEMO_TAX_RATE = "0.08"
+# Pattern Shop charges 8% tax on the item total.
+SHOP_TAX_RATE = "0.08"
 
 # "$29.99" or "Item total: $29.99" -> "29.99"
 _PRICE_PATTERN = re.compile(r"\$(\d+(?:\.\d{2})?)")
@@ -26,18 +26,9 @@ _PRICE_PATTERN = re.compile(r"\$(\d+(?:\.\d{2})?)")
 
 @library(scope="GLOBAL")  # stateless, so one instance for the whole run is enough
 class ShopLibrary:
-    """Python keywords for what Robot syntax does awkwardly: product ids, exact money maths with Decimal, sort
-    checks and random test data.
+    """Python keywords for what Robot syntax does awkwardly: exact money maths with Decimal, sort checks and
+    random test data.
     """
-
-    @keyword
-    def product_id_from_name(self, product_name):
-        """Returns the id Sauce Demo builds from a product name for its button locators.
-
-        Example: "Sauce Labs Bolt T-Shirt" -> "sauce-labs-bolt-t-shirt",
-        used in data-test="add-to-cart-sauce-labs-bolt-t-shirt".
-        """
-        return product_name.strip().lower().replace(" ", "-")
 
     @keyword
     def parse_prices(self, price_texts):
@@ -75,7 +66,7 @@ class ShopLibrary:
         logger.info(f"{len(values)} values sorted {order}")
 
     @keyword
-    def calculate_order_totals(self, item_prices, tax_rate=SAUCE_DEMO_TAX_RATE):
+    def calculate_order_totals(self, item_prices, tax_rate=SHOP_TAX_RATE):
         """Returns (subtotal, tax, total) for `item_prices`, as Decimals rounded to cents.
 
         Tax is rounded half up, like the shop does: 0.125 -> 0.13.

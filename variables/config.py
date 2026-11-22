@@ -25,19 +25,21 @@ def _env_bool(name, default):
     return value.strip().lower() in ("true", "1", "yes")
 
 
-# ---------- UI (Sauce Demo) ----------
-UI_URL = _env("UI_URL", "https://www.saucedemo.com")
+# ---------- UI (Pattern Shop) ----------
+# My own demo shop, run next to the tests: docker run -d -p 8080:8080 ghcr.io/niranjankagri/pattern-shop-demo-app
+# The hosted demo also works: UI_URL=https://pattern-shop.onrender.com (it sleeps when idle).
+UI_URL = _env("UI_URL", "http://localhost:8080")
 BROWSER = _env("BROWSER", "chrome")          # chrome | firefox | edge
 HEADLESS = _env_bool("HEADLESS", False)      # true in CI, false locally to watch the run
 TIMEOUT = _env("TIMEOUT", "10 s")            # max wait for any element/condition
 WINDOW_WIDTH = 1366
 WINDOW_HEIGHT = 900
 
-# Sauce Demo publishes its test users on the login page; they are not secrets.
+# The shop's demo users are public (its README and /api/test-data/users); they are not secrets.
 STANDARD_USER = "standard_user"
-LOCKED_USER = "locked_out_user"
+LOCKED_USER = "locked_user"
 PROBLEM_USER = "problem_user"
-PASSWORD = _env("SAUCE_PASSWORD", "secret_sauce")
+PASSWORD = _env("SHOP_PASSWORD", "secret_sauce")
 
 # ---------- API (DummyJSON) ----------
 API_URL = _env("API_URL", "https://dummyjson.com")

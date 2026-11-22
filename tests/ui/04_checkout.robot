@@ -17,11 +17,11 @@ Test Tags         ui    checkout
     ...                and the cart is empty again after the order.
     [Tags]    smoke    e2e    TC-112
     # Products page: fill the cart.
-    Add Product To Cart    Sauce Labs Backpack
-    Add Product To Cart    Sauce Labs Fleece Jacket
+    Add Product To Cart    Backpack
+    Add Product To Cart    Fleece Jacket
     # Cart page: exactly the two products, then on to the checkout.
     Open Cart Through Header Icon
-    Cart Should Contain Only    Sauce Labs Backpack    Sauce Labs Fleece Jacket
+    Cart Should Contain Only    Backpack    Fleece Jacket
     Proceed To Checkout
     # Step 1 (information) and step 2 (overview with the price check).
     Submit Random Customer Information
@@ -38,9 +38,9 @@ Test Tags         ui    checkout
     [Documentation]    Three products of different prices, so the rounding of the tax
     ...                to cents is checked too.
     [Tags]    TC-113
-    Add Product To Cart    Sauce Labs Bike Light
-    Add Product To Cart    Sauce Labs Bolt T-Shirt
-    Add Product To Cart    Sauce Labs Onesie
+    Add Product To Cart    Bike Light
+    Add Product To Cart    Bolt T-Shirt
+    Add Product To Cart    Fleece Jacket
     # Go the shortest way to the overview, where the totals are shown.
     Open Cart Through Header Icon
     Proceed To Checkout
@@ -51,7 +51,7 @@ Test Tags         ui    checkout
     [Documentation]    Cancelling on the overview step returns to the products and keeps
     ...                the product in the cart (no order is placed).
     [Tags]    TC-114
-    Add Product To Cart    Sauce Labs Backpack
+    Add Product To Cart    Backpack
     Open Cart Through Header Icon
     Proceed To Checkout
     # After this step the overview (step 2) is shown; cancel there.
@@ -65,20 +65,27 @@ Test Tags         ui    checkout
     [Documentation]    Data-driven: each row leaves one field of step 1 empty and checks
     ...                the error message for that field.
     [Tags]    negative    TC-115
+    # The shop shows the form only for a cart with a product, so the setup adds one.
+    [Setup]    Open Browser, Log In And Add A Product
     # Each row below is one call of the template keyword with these arguments.
     [Template]    Checkout Form Should Fail With Error
     # first name    last name    postal code    expected error
-    ${EMPTY}        Doe          12345          Error: First Name is required
-    Jane            ${EMPTY}     12345          Error: Last Name is required
-    Jane            Doe          ${EMPTY}       Error: Postal Code is required
+    ${EMPTY}        Doe          12345          First name is required.
+    Jane            ${EMPTY}     12345          Last name is required.
+    Jane            Doe          ${EMPTY}       Postal code is required.
 
 
 *** Keywords ***
+Open Browser, Log In And Add A Product
+    [Documentation]    Setup of TC-115: the usual login, then one product in the cart.
+    Open Browser And Log In
+    Add Product To Cart    Backpack
+
 Checkout Form Should Fail With Error
     [Documentation]    Template for the rows above: opens step 1 directly, submits the given
     ...                values and checks the error message.
     [Arguments]    ${first_name}    ${last_name}    ${postal_code}    ${expected_error}
-    # By URL: the form works with an empty cart, and it also clears the previous row's error.
+    # By URL: this also clears the previous row's error (the cart keeps its product).
     Open Checkout Information Page Directly
     Submit Customer Information    ${first_name}    ${last_name}    ${postal_code}
     Checkout Error Message Should Be    ${expected_error}

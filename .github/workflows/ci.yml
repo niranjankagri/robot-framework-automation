@@ -1,8 +1,9 @@
 # Continuous integration: lint first, then the whole suite in parallel, headless.
 #
 # Runs on every push and pull request to main, by hand (Actions tab -> Run workflow),
-# and every night: the apps under test are public sites that can change without
-# any commit here, so a nightly run notices that on its own.
+# and every night: the API under test (DummyJSON) is a public site that can change
+# without any commit here, so a nightly run notices that on its own. The UI tests run
+# against Pattern Shop (my own demo shop), started from its image in each job.
 name: CI
 
 on:
@@ -68,6 +69,14 @@ jobs:
       # without a virtual environment.
       - name: Install dependencies
         run: pip install -r requirements.txt
+
+      # A fresh shop for this job only (nothing shared between the browsers, never down);
+      # the UI tests reach it at http://localhost:8080 (UI_URL in variables/config.py).
+      - name: Start Pattern Shop
+        run: |
+          docker run -d --name shop -p 8080:8080 ghcr.io/niranjankagri/pattern-shop-demo-app:latest
+          for i in $(seq 1 30); do [ "$(curl -s localhost:8080/health)" = "ok" ] && exit 0; sleep 1; done
+          docker logs shop; exit 1
 
       - name: Run tests with pabot
         env:
