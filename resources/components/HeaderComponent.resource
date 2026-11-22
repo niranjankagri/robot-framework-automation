@@ -23,7 +23,7 @@ Log Out Through Header
     Click Button    ${LOGOUT_BUTTON}
 
 Get Cart Count
-    [Documentation]    Returns the number in the cart link as an integer.
+    [Documentation]    Returns the number in the cart link as text, e.g. "2".
     Wait Until Element Is Visible    ${CART_COUNT}
     ${text}=    Get Text    ${CART_COUNT}
     RETURN    ${text.strip()}
