@@ -55,7 +55,7 @@ Submit Customer Information
     Input Text    ${FIRST_NAME_INPUT}     ${first_name}
     Input Text    ${LAST_NAME_INPUT}      ${last_name}
     Input Text    ${POSTAL_CODE_INPUT}    ${postal_code}
-    Click Button    ${CONTINUE_BUTTON}
+    Click And Wait For New Page    ${CONTINUE_BUTTON}
 
 Submit Random Customer Information
     [Documentation]    Step 1 with a random name and postal code (see ShopLibrary),
@@ -86,7 +86,7 @@ Overview Totals Should Match Item Prices Plus Tax
 
 Place Order
     [Documentation]    Step 2: clicks "Finish" to place the order.
-    Click Button    ${FINISH_BUTTON}
+    Click And Wait For New Page    ${FINISH_BUTTON}
 
 Order Confirmation Should Be Shown
     [Documentation]    Step 3: checks the "Thank you for your order" page and its order number.
@@ -100,9 +100,11 @@ Order Confirmation Should Be Shown
 
 Return To Products After Order
     [Documentation]    Step 3: clicks "Back to products" to return to the product list.
-    Click Link    ${BACK_TO_PRODUCTS_LINK}
+    Click And Wait For New Page    ${BACK_TO_PRODUCTS_LINK}
 
 Cancel Checkout
     [Documentation]    Clicks "Cancel" on step 2: the shop goes back to the product list and
     ...                keeps the cart (no order is placed).
-    Click Link    ${CANCEL_LINK}
+    # Step 1 has a "cancel" link too, so wait for step 2 before looking for it.
+    Wait Until Element Is Visible    ${FINISH_BUTTON}
+    Click And Wait For New Page    ${CANCEL_LINK}

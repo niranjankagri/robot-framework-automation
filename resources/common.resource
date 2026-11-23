@@ -74,3 +74,27 @@ Get Texts Of All Matching Elements
         Append To List    ${texts}    ${element.text}
     END
     RETURN    ${texts}
+
+Click And Wait For New Page
+    [Documentation]    Clicks ${locator} and waits until the browser shows the NEXT page.
+    ...
+    ...                Pattern Shop renders every page on the server, so a click on a
+    ...                button or link loads a whole new page. Until it is in, the old page
+    ...                is still there and a later step can find an element on it (several
+    ...                pages share one data-testid, e.g. "cancel" or "cart-count"), which
+    ...                then goes stale and fails the step at random.
+    ...
+    ...                The old page gets a marker before the click; a fresh page has none.
+    [Arguments]    ${locator}
+    Execute Javascript    window.rfOldPage = true;
+    Click Element    ${locator}
+    # Wait Until Keyword Succeeds also retries the errors a page throws while it is
+    # being replaced; "Wait For Condition" retries only stale elements.
+    Wait Until Keyword Succeeds    ${TIMEOUT}    0.2 s    New Page Should Be Loaded
+
+New Page Should Be Loaded
+    [Documentation]    Passes once the page has no marker from `Click And Wait For New Page`
+    ...                and has finished loading.
+    ${loaded}=    Execute Javascript
+    ...    return window.rfOldPage === undefined && document.readyState === 'complete';
+    Should Be True    ${loaded}    msg=The next page has not loaded yet.

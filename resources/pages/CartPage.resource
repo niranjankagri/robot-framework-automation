@@ -48,14 +48,14 @@ Remove Product From Cart
     Cart Page Should Be Open
     VAR    ${row}
     ...    xpath://li[@data-testid="cart-item"][span[@data-testid="cart-item-name" and normalize-space()="${product_name}"]]
-    Click Button    ${row}//button
-    # Waiting for the row to go means the next step sees the updated counter.
-    Wait Until Page Does Not Contain Element    ${row}
+    Click And Wait For New Page    ${row}//button
+    # The reloaded cart has no row for it any more.
+    Page Should Not Contain Element    ${row}
 
 Continue Shopping From Cart
     [Documentation]    Clicks "Continue shopping" to go back to the product list.
-    Click Link    ${CONTINUE_SHOPPING_LINK}
+    Click And Wait For New Page    ${CONTINUE_SHOPPING_LINK}
 
 Proceed To Checkout
     [Documentation]    Clicks "Checkout" to start step 1 of the checkout (your information).
-    Click Button    ${CHECKOUT_BUTTON}
+    Click And Wait For New Page    ${CHECKOUT_BUTTON}
