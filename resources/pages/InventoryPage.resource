@@ -40,7 +40,7 @@ Sort Products By
     [Arguments]    ${option_label}
     # The sort control is a real <select>, so SeleniumLibrary's list keywords work on it.
     Select From List By Label    ${SORT_DROPDOWN}    ${option_label}
-    Click Button    ${SORT_BUTTON}
+    Click And Wait For New Page    ${SORT_BUTTON}
     # The page reloads with the new order; the chosen option stays selected.
     Wait Until Keyword Succeeds    ${TIMEOUT}    200 ms
     ...    List Selection Should Be    ${SORT_DROPDOWN}    ${option_label}
@@ -64,8 +64,8 @@ Add Product To Cart
     [Arguments]    ${product_name}
     ${before}=    Get Cart Count
     # The card whose name link has this exact text, and the add button inside it.
-    Click Button
+    Click And Wait For New Page
     ...    xpath://li[@data-testid="product-card"][a[@data-testid="product-name" and normalize-space()="${product_name}"]]//button
-    # The page reloads after the click; the counter shows the new number.
+    # The reloaded page shows the new number (exact match: "1" is not "11").
     ${expected}=    Evaluate    ${before} + 1
-    Wait Until Element Contains    ${CART_COUNT}    ${expected}
+    Cart Badge Count Should Be    ${expected}

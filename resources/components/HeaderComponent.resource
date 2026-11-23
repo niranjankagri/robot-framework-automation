@@ -20,7 +20,7 @@ ${CART_COUNT}             css:[data-testid="cart-count"]
 Log Out Through Header
     [Documentation]    Logs the user out with the "Sign out" button in the header.
     ...                The shop then shows the sign-in page again.
-    Click Button    ${LOGOUT_BUTTON}
+    Click And Wait For New Page    ${LOGOUT_BUTTON}
 
 Get Cart Count
     [Documentation]    Returns the number in the cart link as text, e.g. "2".
@@ -37,4 +37,4 @@ Cart Badge Count Should Be
 
 Open Cart Through Header Icon
     [Documentation]    Opens the cart page with the cart link in the header.
-    Click Link    ${CART_LINK}
+    Click And Wait For New Page    ${CART_LINK}

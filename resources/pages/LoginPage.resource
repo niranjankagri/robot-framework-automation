@@ -40,7 +40,7 @@ Submit Login Form
     Input Text        ${USERNAME_INPUT}    ${username}
     # Input Password keeps the value out of log.html.
     Input Password    ${PASSWORD_INPUT}    ${password}
-    Click Button      ${LOGIN_BUTTON}
+    Click And Wait For New Page    ${LOGIN_BUTTON}
 
 Login Error Message Should Be
     [Documentation]    Checks the red error message shown under the login form.
